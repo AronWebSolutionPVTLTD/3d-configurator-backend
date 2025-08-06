@@ -1,7 +1,7 @@
 const express = require("express");
 const allRouter = express.Router();
-const {configurator} = require("../routes/auth/configurator")
+const { userRouter } = require("./auth/configurator");
 
-allRouter.use("/configuration", configurator);
+allRouter.use("/configuration", userRouter);
 
-module.exports = {}
+module.exports = allRouter;
