@@ -12,7 +12,6 @@ const productTypeSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    required: true,
     enum: ['jersey', 'shorts', 'trousers', 'socks', 'collar_shirt', 'pullover', 'training_suit', 'accessory']
   },
   description: {
@@ -33,7 +32,6 @@ const productTypeSchema = new mongoose.Schema({
   },
   price: {
     type: Number,
-    required: true,
     min: 0
   },
   priceNote: {
@@ -46,6 +44,14 @@ const productTypeSchema = new mongoose.Schema({
   },
   image: {
     type: String,
+  },
+  isPremium: {
+    type: Boolean,
+    default: false
+  },
+  customization: {
+    type: String,
+    default: null
   },
   isActive: {
     type: Boolean,

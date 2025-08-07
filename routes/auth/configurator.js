@@ -8,5 +8,5 @@ const {
 
 userRouter.post("/register", registerUser);
 userRouter.post("/login", loginUser);
-
+userRouter.post("/create-product-type", createProductType);
 module.exports = { userRouter };

@@ -2,6 +2,7 @@ const User = require("../../model/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { sendResponse } = require("../../helper/status");
+const ProductType = require("../../model/productType");
 
 const registerUser = async (req, res) => {
     try {
@@ -48,4 +49,16 @@ const loginUser = async (req, res) => {
     }
 }
 
-module.exports = { registerUser, loginUser };
+const createProductType = async (req, res) => {
+    try {
+        const { id, name, category, description, style, performance,isPremium,customization, gsm, price, priceNote,tag,image,isActive,sortOrder } = req.body;
+        const productType = new ProductType({ id, name, category, description, style, performance,isPremium,customization, gsm, price,priceNote,tag,image,isActive,sortOrder });
+        await productType.save();
+        return sendResponse(res, 200, true, "Product type added successfully");
+    } catch (error) {
+        console.log(error);
+        return sendResponse(res, 500, false, error.message);
+    }
+}
+
+module.exports = { registerUser, loginUser, createProductType };
