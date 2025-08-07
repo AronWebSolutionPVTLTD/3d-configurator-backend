@@ -61,4 +61,13 @@ const createProductType = async (req, res) => {
     }
 }
 
-module.exports = { registerUser, loginUser, createProductType };
+const getProductType = async (req, res) => {
+    try{
+        console.log("---->");
+    }catch{(error)
+    console.log(error);
+    return sendResponse(res, 500, false, error.message);
+    }
+}
+
+module.exports = { registerUser, loginUser, createProductType, getProductType };
