@@ -1,5 +1,6 @@
 const User = require("../../model/User");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const { sendResponse } = require("../../helper/status");
 
 const registerUser = async (req, res) => {
@@ -12,8 +13,7 @@ const registerUser = async (req, res) => {
         if (user) {
             return sendResponse(res, 400, false, "User already exists");
         }
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({ name, email, password: hashedPassword, role: role });
+        const newUser = new User({ name, email, password, role: role });
         await newUser.save();
         return sendResponse(res, 200, true, "User registered successfully");
  
@@ -29,11 +29,11 @@ const loginUser = async (req, res) => {
         if (!email || !password) {
             return sendResponse(res, 400, false, "All fields are required");
         }
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }).select('+password');;
         if (!user) {
             return sendResponse(res, 400, false, "User not found");
         }
-        console.log("user----->", user.password);
+        console.log("user----->", user);
         const isPasswordCorrect = await bcrypt.compare(password, user.password);
         console.log("isPasswordCorrect----->", isPasswordCorrect);
 

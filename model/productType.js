@@ -6,12 +6,9 @@ const mongoose = require('mongoose');
 const productTypeSchema = new mongoose.Schema({
   id: {
     type: String,
-    required: true,
-    unique: true
   },
   name: {
     type: String,
-    required: true
   },
   category: {
     type: String,
@@ -49,7 +46,6 @@ const productTypeSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    required: true
   },
   isActive: {
     type: Boolean,
