@@ -1,11 +1,12 @@
 const express = require("express");
 const userRouter = express.Router();
-const { registerUser } = require("../../controller/auth/admin");
+const { registerUser, loginUser } = require("../../controller/auth/admin");
 const {
   canModifyUser,
   verifyToken,
 } = require("../../middleware/authMiddleware");
 
-userRouter.post("/test", registerUser);
+userRouter.post("/register", registerUser);
+userRouter.post("/login", loginUser);
 
 module.exports = { userRouter };
