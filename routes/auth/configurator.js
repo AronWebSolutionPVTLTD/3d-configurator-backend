@@ -18,8 +18,8 @@ const {
 
 userRouter.post("/register", registerUser);
 userRouter.post("/login", loginUser);
-userRouter.post("/create-product-type", createProductType);
-userRouter.get("/get-product-type", getProductType);
+userRouter.post("/create-product-type",verifyToken, createProductType);
+userRouter.get("/get-product-type",verifyToken, getProductType);
 
 userRouter.post("/create-menu-configuration", createMenuConfiguration);
 userRouter.get("/get-menu-configuration", getMenuConfiguration);
