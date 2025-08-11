@@ -77,8 +77,8 @@ const getProductType = async (req, res) => {
 const createMenuConfiguration = async (req, res) => {
     try {
         const { id, name, icon, type, isActive, sortOrder, isSelected, hasSubItems, subItems, contentModel, hasTabs, tabs } = req.body;
-        
         // Check if menu item already exists
+
         const existingMenu = await MenuConfiguration.findOne({ id });
         if (existingMenu) {
             return sendResponse(res, 400, false, "Menu item already exists");

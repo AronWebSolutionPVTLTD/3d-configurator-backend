@@ -67,100 +67,47 @@ menuConfigurationSchema.index({ isActive: 1, sortOrder: 1, type: 1 });
 menuConfigurationSchema.set('toJSON', { virtuals: true });
 menuConfigurationSchema.set('toObject', { virtuals: true });
 
-/*
-Sample data structure based on the UI image:
 
-[
+/* 1. Type Menu (Simple
   {
     id: "type",
-    name: "Type",
-    icon: "shirt-with-triangle-square",
-    type: "navigation",
-    isSelected: true,
-    sortOrder: 1
-  },
-  {
-    id: "design",
-    name: "Design", 
-    icon: "pencil",
-    type: "navigation",
-    isSelected: false,
-    sortOrder: 2
-  },
-  {
-    id: "features",
-    name: "Features",
-    icon: "t-shirt",
-    type: "navigation", 
-    isSelected: false,
-    sortOrder: 3
-  },
-  {
-    id: "color",
-    name: "Color",
-    icon: "gear",
-    type: "navigation",
-    isSelected: false,
-    sortOrder: 4
-  },
-  {
-    id: "pattern",
-    name: "Pattern",
-    icon: "infinity",
-    type: "navigation",
-    isSelected: false,
-    sortOrder: 5
-  },
-  {
-    id: "number",
-    name: "Number",
-    icon: "circled-1",
-    type: "navigation",
-    isSelected: false,
-    sortOrder: 6
-  },
-  {
-    id: "name",
-    name: "Name",
-    icon: "person",
-    type: "navigation",
-    isSelected: false,
-    sortOrder: 7
-  },
-  {
-    id: "text",
-    name: "Text",
-    icon: "Aa",
-    type: "navigation",
-    isSelected: false,
-    sortOrder: 8
-  },
-  {
-    id: "logos",
-    name: "Logos",
-    icon: "picture-frame",
-    type: "navigation",
-    isSelected: false,
-    sortOrder: 9
-  },
-  {
-    id: "undo-redo",
-    name: "Undo/Redo",
-    icon: "arrows",
-    type: "action",
-    isSelected: false,
-    sortOrder: 10
-  },
-  {
-    id: "support",
-    name: "Support",
-    icon: "soccer-ball",
-    type: "support",
-    isSelected: false,
-    sortOrder: 11
+    hasSubItems: false,        // No sub-items
+    contentModel: "TypeConfiguration", // Loads jersey types
+    hasTabs: false            // No tabs
   }
-]
-*/
+
+2. Features Menu (Sub-items)
+{
+  id: "features", 
+  hasSubItems: true,        // Has sub-items
+  subItems: [
+    { id: "shoulder-style", name: "Shoulder Style" },
+    { id: "collar-style", name: "Collar Style" }
+  ],
+  contentModel: "FeaturesConfiguration"
+}
+
+3. Color Menu (Tabs)
+{
+  id: "color",
+  hasSubItems: false,       // No sub-items
+  contentModel: "ColorConfiguration",
+  hasTabs: true,           // Has tabs
+  tabs: [
+    { id: "colors", name: "Colors" },
+    { id: "gradient", name: "Gradient" }
+  ]
+}
+
+4. Design Menu (Complex - Both)
+{
+  id: "design",
+  hasSubItems: true,        // Has sub-items
+  subItems: [...],
+  contentModel: "DesignConfiguration", 
+  hasTabs: true,           // Also has tabs
+  tabs: [...]
+} */
 
 module.exports = mongoose.model('MenuConfiguration', menuConfigurationSchema); 
 

@@ -21,8 +21,8 @@ userRouter.post("/login", loginUser);
 userRouter.post("/create-product-type",verifyToken, createProductType);
 userRouter.get("/get-product-type",verifyToken, getProductType);
 
-userRouter.post("/create-menu-configuration", createMenuConfiguration);
-userRouter.get("/get-menu-configuration", getMenuConfiguration);
+userRouter.post("/create-menu-configuration",verifyToken, createMenuConfiguration);
+userRouter.get("/get-menu-configuration",verifyToken, getMenuConfiguration);
 
 // Type Configuration routes
 userRouter.post("/create-type-configuration", createTypeConfiguration);
