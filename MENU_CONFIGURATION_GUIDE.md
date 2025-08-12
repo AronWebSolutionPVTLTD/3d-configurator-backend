@@ -240,7 +240,46 @@ The `MenuConfiguration` model has several fields that support different UI patte
   ]
 }
 ```
-
+{
+    "id": "design",
+    "name": "Design",
+    "icon": "pencil",
+    "isActive": true,
+    "sortOrder": 2,
+    "type": "navigation",
+    "isSelected": true,
+    "hasSubItems": true,
+    "subItems": [
+      {
+        "id": "all-designs",
+        "name": "All designs",
+        "icon": "grid",
+        "isActive": true,
+        "sortOrder": 1
+      },
+      {
+        "id": "nhl",
+        "name": "NHL",
+        "icon": "hockey",
+        "isActive": true,
+        "sortOrder": 2
+      }
+    ],
+    "contentModel": "DesignConfiguration",
+    "hasTabs": true,
+    "tabs": [
+      {
+        "id": "all-designs",
+        "name": "All designs",
+        "isActive": true
+      },
+      {
+        "id": "nhl",
+        "name": "NHL",
+        "isActive": false
+      }
+    ]
+  },
 ### 5. **Action Items** (No Content)
 ```javascript
 {
