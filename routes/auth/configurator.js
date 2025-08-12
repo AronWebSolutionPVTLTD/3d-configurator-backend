@@ -2,15 +2,18 @@ const express = require("express");
 const userRouter = express.Router();
 const { 
     registerUser, 
-    loginUser, 
-    createProductType, 
-    getProductType, 
+    loginUser 
+} = require("../../controller/auth/admin");
+const {
     createMenuConfiguration, 
     getMenuConfiguration,
+    updateMenuConfiguration
+} = require("../../controller/menuController");
+const {
     createTypeConfiguration,
     getTypeConfiguration,
     updateTypeConfiguration
-} = require("../../controller/auth/admin");
+} = require("../../controller/typeController");
 const {
   canModifyUser,
   verifyToken,
@@ -18,11 +21,10 @@ const {
 
 userRouter.post("/register", registerUser);
 userRouter.post("/login", loginUser);
-userRouter.post("/create-product-type",verifyToken, createProductType);
-userRouter.get("/get-product-type",verifyToken, getProductType);
 
 userRouter.post("/create-menu-configuration",verifyToken, createMenuConfiguration);
 userRouter.get("/get-menu-configuration",verifyToken, getMenuConfiguration);
+userRouter.put("/update-menu-configuration",verifyToken, updateMenuConfiguration);
 
 // Type Configuration routes
 userRouter.post("/create-type-configuration", createTypeConfiguration);

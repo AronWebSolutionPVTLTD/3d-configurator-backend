@@ -3,8 +3,7 @@ const mongoose = require('mongoose');
 const typeConfigurationSchema = new mongoose.Schema({
   menuId: {
     type: String,
-    required: true,
-    ref: 'MenuConfiguration'
+    required: true
   },
   title: {
     type: String,
