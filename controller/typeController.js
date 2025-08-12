@@ -30,12 +30,12 @@ const createTypeConfiguration = async (req, res) => {
 
 const getTypeConfiguration = async (req, res) => {
     try {
-        const { menuId } = req.params;
+        const { id } = req.params;
         
         const typeConfiguration = await TypeConfiguration.findOne({ 
-            menuId, 
+            id, 
             isActive: true 
-        }).populate('menuId');
+        }).populate('id');
 
         if (!typeConfiguration) {
             return sendResponse(res, 404, false, "Type configuration not found");

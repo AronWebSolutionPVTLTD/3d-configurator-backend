@@ -15,6 +15,16 @@ const {
     updateTypeConfiguration
 } = require("../../controller/typeController");
 const {
+    createDesign,
+    getDesigns,
+    getDesignById,
+    updateDesign,
+    deleteDesign,
+    getDesignsByCategory,
+    searchDesigns
+} = require("../../controller/designController");
+
+const {
   canModifyUser,
   verifyToken,
 } = require("../../middleware/authMiddleware");
@@ -27,8 +37,15 @@ userRouter.get("/get-menu-configuration",verifyToken, getMenuConfiguration);
 userRouter.put("/update-menu-configuration",verifyToken, updateMenuConfiguration);
 
 // Type Configuration routes
-userRouter.post("/create-type-configuration", createTypeConfiguration);
-userRouter.get("/get-type-configuration/:menuId", getTypeConfiguration);
-userRouter.put("/update-type-configuration/:menuId", updateTypeConfiguration);
+userRouter.post("/create-type-configuration",verifyToken, createTypeConfiguration);
+userRouter.get("/get-type-configuration/:menuId",verifyToken, getTypeConfiguration);
+userRouter.put("/update-type-configuration/:menuId",verifyToken, updateTypeConfiguration);
+
+// Design Configuration routes
+userRouter.post("/create-design-configuration",verifyToken, createDesign);
+userRouter.get("/get-design-configuration",verifyToken, getDesigns);
+userRouter.put("/update-design-configuration/:id",verifyToken, updateDesign); 
+userRouter.delete("/delete-design-configuration/:id",verifyToken, deleteDesign);
+
 
 module.exports = { userRouter };
