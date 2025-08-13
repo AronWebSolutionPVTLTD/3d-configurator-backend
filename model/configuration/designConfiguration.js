@@ -16,8 +16,6 @@ const designConfigurationSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    required: true,
-    enum: ['nhl', 'all', 'custom']
   },
   description: {
     type: String,
