@@ -68,7 +68,7 @@ userRouter.delete("/delete-features-configuration/:id", verifyToken, deleteFeatu
 userRouter.post("/features-configuration/:id/features", verifyToken, addFeature);
 userRouter.put("/features-configuration/:id/features/:featureId", verifyToken, updateFeature);
 userRouter.delete("/features-configuration/:id/features/:featureId", verifyToken, deleteFeature);
-
+ 
 
 
 module.exports = { userRouter };
