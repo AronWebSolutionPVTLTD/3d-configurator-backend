@@ -25,6 +25,17 @@ const {
 } = require("../../controller/designController");
 
 const {
+    createFeaturesConfiguration,
+    getFeaturesConfigurations,
+    updateFeaturesConfiguration,
+    deleteFeaturesConfiguration,
+    addFeature,
+    updateFeature,
+    deleteFeature,
+    toggleActiveStatus
+} = require("../../controller/featuresController");
+
+const {
   canModifyUser,
   verifyToken,
 } = require("../../middleware/authMiddleware");
@@ -46,6 +57,18 @@ userRouter.post("/create-design-configuration",verifyToken, createDesign);
 userRouter.get("/get-design-configuration",verifyToken, getDesigns);
 userRouter.put("/update-design-configuration/:id",verifyToken, updateDesign); 
 userRouter.delete("/delete-design-configuration/:id",verifyToken, deleteDesign);
+
+// Features Configuration routes
+userRouter.post("/create-features-configuration", verifyToken, createFeaturesConfiguration);
+userRouter.get("/get-features-configuration", verifyToken, getFeaturesConfigurations);
+userRouter.put("/update-features-configuration/:id", verifyToken, updateFeaturesConfiguration);
+userRouter.delete("/delete-features-configuration/:id", verifyToken, deleteFeaturesConfiguration);
+
+// Feature-level operations
+userRouter.post("/features-configuration/:id/features", verifyToken, addFeature);
+userRouter.put("/features-configuration/:id/features/:featureId", verifyToken, updateFeature);
+userRouter.delete("/features-configuration/:id/features/:featureId", verifyToken, deleteFeature);
+
 
 
 module.exports = { userRouter };
