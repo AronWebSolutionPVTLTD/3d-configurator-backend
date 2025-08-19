@@ -17,11 +17,8 @@ const {
 const {
     createDesign,
     getDesigns,
-    getDesignById,
     updateDesign,
     deleteDesign,
-    getDesignsByCategory,
-    searchDesigns
 } = require("../../controller/designController");
 
 const {
@@ -32,7 +29,7 @@ const {
     addFeature,
     updateFeature,
     deleteFeature,
-    toggleActiveStatus
+    getFeatureById,
 } = require("../../controller/featuresController");
 
 const {
@@ -68,7 +65,7 @@ userRouter.delete("/delete-features-configuration/:id", verifyToken, deleteFeatu
 userRouter.post("/features-configuration/:id/features", verifyToken, addFeature);
 userRouter.put("/features-configuration/:id/features/:featureId", verifyToken, updateFeature);
 userRouter.delete("/features-configuration/:id/features/:featureId", verifyToken, deleteFeature);
- 
+userRouter.get("/features-configuration/:id/features/:featureId", verifyToken, getFeatureById);
 
 
 module.exports = { userRouter };

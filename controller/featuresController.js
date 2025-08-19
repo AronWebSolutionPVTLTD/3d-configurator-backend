@@ -353,6 +353,7 @@ module.exports = {
     getFeaturesConfigurations,
     updateFeaturesConfiguration,
     deleteFeaturesConfiguration,
+    getFeatureById,
     addFeature,
     updateFeature,
     deleteFeature,
