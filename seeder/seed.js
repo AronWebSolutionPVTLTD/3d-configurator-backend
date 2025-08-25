@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+dotenv.config();
 
 // Models
 const Tool = require("../model/Tool.js");
@@ -16,7 +18,7 @@ const {
   toolsMenuWithOptions,
 } = require("../data/toolsMenuData.js");
 
-const MONGO_URI = "mongodb://127.0.0.1:27017/3D-configurator-gagan"; // change db name
+const MONGO_URI = process.env.MONGODB_URI || "mongodb+srv://3d-db:lxnHi3VIJq2VhJtr@cluster0.54afd9b.mongodb.net/3d-configurator";
 
 async function seed() {
   try {

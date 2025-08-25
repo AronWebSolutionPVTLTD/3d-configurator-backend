@@ -1,5 +1,5 @@
 const express = require("express");
-const { getTools, getTool } = require("../controller/toolsController");
+const { getTools, getTool, createTool } = require("../controller/toolsController");
 const {
   userSignup,
   userLogin,
@@ -36,6 +36,21 @@ const {
   updateCategory,
   deleteCategory,
 } = require("../controller/merchantController/categoryController");
+const {
+  productSchema,
+  productUpdateSchema,
+  productStatusSchema,
+  productQuerySchema,
+} = require("../validation/productValidations");
+const { toolSchema } = require("../validation/toolValidations");
+const {
+  createProduct,
+  getProducts,
+  getProduct,
+  updateProduct,
+  deleteProduct,
+  updateProductStatus,
+} = require("../controller/merchantController/productController");
 const routes = express.Router();
 
 //sign up login and authentication routes
@@ -89,5 +104,14 @@ routes.delete("/categories/:id", verifyToken, deleteCategory);
 
 routes.get("/tools", getTools);
 routes.get("/tools/:id", getTool);
+routes.post("/tools", verifyToken, validateRequest(toolSchema), createTool);
+
+//product routes
+routes.get("/products", verifyToken, validateRequest(productQuerySchema), getProducts);
+routes.get("/products/:id", verifyToken, getProduct);
+routes.post("/products", verifyToken, validateRequest(productSchema), createProduct);
+routes.put("/products/:id", verifyToken, validateRequest(productUpdateSchema), updateProduct);
+routes.delete("/products/:id", verifyToken, deleteProduct);
+routes.patch("/products/:id/status", verifyToken, validateRequest(productStatusSchema), updateProductStatus);
 
 module.exports = routes;

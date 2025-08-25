@@ -18,4 +18,19 @@ const getTool = asyncHandler(async (req, res) => {
   successResponse(res, tool);
 });
 
-module.exports = { getTools, getTool };
+// create a new tool
+const createTool = asyncHandler(async (req, res) => {
+  const { value, label, description, relatedModels } = req.body;
+  
+  const tool = new Tool({
+    value,
+    label,
+    description,
+    relatedModels: relatedModels || []
+  });
+
+  await tool.save();
+  return successResponse(res, tool, "Tool created successfully", 201);
+});
+
+module.exports = { getTools, getTool, createTool };
