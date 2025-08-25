@@ -36,6 +36,9 @@ const {
   updateCategory,
   deleteCategory,
 } = require("../controller/merchantController/categoryController");
+const {
+  getProducts,
+} = require("../controller/merchantController/productController");
 const routes = express.Router();
 
 //sign up login and authentication routes
@@ -87,7 +90,15 @@ routes.put(
 );
 routes.delete("/categories/:id", verifyToken, deleteCategory);
 
-routes.get("/tools", getTools);
-routes.get("/tools/:id", getTool);
+//product routes
+routes.get("/products", verifyToken, getProducts);
+// routes.get("/products/:id", verifyToken, getProduct);
+// routes.post("/products", verifyToken, validateRequest(productSchema), createProduct);
+// routes.put("/products/:id", verifyToken, validateRequest(productSchema), updateProduct);
+// routes.delete("/products/:id", verifyToken, deleteProduct);
+
+//tools routes
+routes.get("/tools", verifyToken, getTools);
+routes.get("/tools/:id", verifyToken, getTool);
 
 module.exports = routes;

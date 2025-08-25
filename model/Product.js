@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 const { Schema, model } = mongoose;
 
+require("./User");
+require("./Sport");
+require("./Category");
+require("./ProductTool");
+
 const productSchema = new Schema(
   {
     merchant: {
@@ -23,10 +28,9 @@ const productSchema = new Schema(
       trim: true,
     },
     category: {
-      type: String,
-      enum: ["jersey", "shorts", "jacket", "headgear", "other"],
+      type: Schema.Types.ObjectId,
+      ref: "Category",
       required: true,
-      index: true,
     },
     basePrice: {
       type: Number,
