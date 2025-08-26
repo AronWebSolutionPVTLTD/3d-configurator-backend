@@ -1,10 +1,22 @@
 const { asyncHandler } = require("../../middleware/asyncHandler");
 const Product = require("../../model/Product");
+const ProductTool = require("../../model/ProductTool");
+const Tool = require("../../model/Tool");
 const { successResponse } = require("../../utils/response");
 
 // Create a new product
 const createProduct = asyncHandler(async (req, res) => {
-  const { name, description, category, basePrice, sport, images, tools, stock, status } = req.body;
+  const {
+    name,
+    description,
+    category,
+    basePrice = 0,
+    sport,
+    images,
+    tools,
+    stock,
+    status,
+  } = req.body;
   const merchant = req.user._id;
 
   const product = new Product({
@@ -17,20 +29,61 @@ const createProduct = asyncHandler(async (req, res) => {
     images: images || [],
     tools: tools || [],
     stock: stock || { quantity: 0, isUnlimited: false },
-    status: status || "draft"
+    status: status || "draft",
   });
 
-  await product.save();
+  const isCreated = await product.save();
+
+  if (isCreated?._id) {
+    if (tools && tools.length > 0) {
+      // Only fetch configurations for relevant tools and populate relatedModels.ref
+      const toolConfigurations = await Tool.find({
+        _id: { $in: tools },
+      }).populate({
+        path: "relatedModels.ref",
+      });
+
+      const productTools = tools.map((toolId) => {
+        const configTool = toolConfigurations.find((tool) =>
+          tool._id.equals(toolId)
+        );
+        // Map to full populated relatedModels objects
+        const configuration = configTool
+          ? configTool.relatedModels.map((rm) => ({
+              ...(rm.ref?._doc || rm.ref), // get full populated data
+              model: rm.model,
+            }))
+          : [];
+        return {
+          product: isCreated._id,
+          tool: toolId,
+          config: configuration,
+        };
+      });
+
+      await ProductTool.insertMany(productTools);
+    }
+  }
+
   return successResponse(res, product, "Product created successfully", 201);
 });
 
 // Get all products with pagination and filtering
 const getProducts = asyncHandler(async (req, res) => {
-  const { page = 1, limit = 10, sortBy = "createdAt", order = "desc", search, category, sport, status } = req.query;
+  const {
+    page = 1,
+    limit = 10,
+    sortBy = "createdAt",
+    order = "desc",
+    search,
+    category,
+    sport,
+    status,
+  } = req.query;
   const merchant = req.user._id;
 
   const query = { merchant };
-  
+
   if (search) {
     query.name = { $regex: search, $options: "i" };
   }
@@ -76,8 +129,8 @@ const getProduct = asyncHandler(async (req, res) => {
     .populate({
       path: "tools",
       populate: {
-        path: "relatedModels.ref"
-      }
+        path: "relatedModels.ref",
+      },
     });
 
   if (!product) {
@@ -97,7 +150,9 @@ const updateProduct = asyncHandler(async (req, res) => {
     { _id: id, merchant },
     updateData,
     { new: true, runValidators: true }
-  ).populate("sport", "name").populate("tools");
+  )
+    .populate("sport", "name")
+    .populate("tools");
 
   if (!product) {
     throw new Error("Product not found");
@@ -112,7 +167,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
   const merchant = req.user._id;
 
   const product = await Product.findOneAndDelete({ _id: id, merchant });
-  
+
   if (!product) {
     throw new Error("Product not found");
   }
@@ -128,7 +183,9 @@ const updateProductStatus = asyncHandler(async (req, res) => {
 
   const validStatuses = ["draft", "active", "inactive", "archived"];
   if (!validStatuses.includes(status)) {
-    throw new Error("Invalid status. Must be one of: draft, active, inactive, archived");
+    throw new Error(
+      "Invalid status. Must be one of: draft, active, inactive, archived"
+    );
   }
 
   const product = await Product.findOneAndUpdate(
@@ -141,7 +198,12 @@ const updateProductStatus = asyncHandler(async (req, res) => {
     throw new Error("Product not found");
   }
 
-  return successResponse(res, product, "Product status updated successfully", 200);
+  return successResponse(
+    res,
+    product,
+    "Product status updated successfully",
+    200
+  );
 });
 
 module.exports = {

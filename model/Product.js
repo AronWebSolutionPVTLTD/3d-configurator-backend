@@ -23,10 +23,9 @@ const productSchema = new Schema(
       trim: true,
     },
     category: {
-      type: String,
-      enum: ["jersey", "shorts", "jacket", "headgear", "other"],
+      type: Schema.Types.ObjectId,
+      ref: "Category",
       required: true,
-      index: true,
     },
     basePrice: {
       type: Number,
