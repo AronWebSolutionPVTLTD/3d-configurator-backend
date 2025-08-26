@@ -123,15 +123,7 @@ const getProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const merchant = req.user._id;
 
-  const product = await Product.findOne({ _id: id, merchant })
-    .populate("sport", "name")
-    .populate("tools")
-    .populate({
-      path: "tools",
-      populate: {
-        path: "relatedModels.ref",
-      },
-    });
+  const product = await Product.findOne({ _id: id, merchant });
 
   if (!product) {
     throw new Error("Product not found");
@@ -144,11 +136,12 @@ const getProduct = asyncHandler(async (req, res) => {
 const updateProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const merchant = req.user._id;
-  const updateData = req.body;
+  const { tools = [], ...updateData } = req.body;
 
+  // Update product without touching tools first
   const product = await Product.findOneAndUpdate(
     { _id: id, merchant },
-    updateData,
+    { ...updateData, tools },
     { new: true, runValidators: true }
   )
     .populate("sport", "name")
@@ -156,6 +149,58 @@ const updateProduct = asyncHandler(async (req, res) => {
 
   if (!product) {
     throw new Error("Product not found");
+  }
+
+  // If tools were sent in the request
+  if (tools && tools.length > 0) {
+    // Get already linked tools from ProductTool
+    const existingTools = await ProductTool.find({
+      product: product._id,
+    }).select("tool");
+    const existingToolIds = existingTools.map((pt) => pt.tool.toString());
+
+    // Find which ones are NEW
+    const newToolIds = tools.filter(
+      (toolId) => !existingToolIds.includes(toolId.toString())
+    );
+
+    // Find which ones need to be REMOVED
+    const removedToolIds = existingToolIds.filter(
+      (toolId) => !tools.includes(toolId.toString())
+    );
+
+    // Insert NEW tools
+    if (newToolIds.length > 0) {
+      const toolConfigurations = await Tool.find({
+        _id: { $in: newToolIds },
+      }).populate("relatedModels.ref");
+
+      const productTools = newToolIds.map((toolId) => {
+        const configTool = toolConfigurations.find((t) => t._id.equals(toolId));
+        const configuration = configTool
+          ? configTool.relatedModels.map((rm) => ({
+              ...(rm.ref?._doc || rm.ref),
+              model: rm.model,
+            }))
+          : [];
+
+        return {
+          product: product._id,
+          tool: toolId,
+          config: configuration,
+        };
+      });
+
+      await ProductTool.insertMany(productTools);
+    }
+
+    // Delete REMOVED tools
+    if (removedToolIds.length > 0) {
+      await ProductTool.deleteMany({
+        product: product._id,
+        tool: { $in: removedToolIds },
+      });
+    }
   }
 
   return successResponse(res, product, "Product updated successfully", 200);
@@ -168,10 +213,13 @@ const deleteProduct = asyncHandler(async (req, res) => {
 
   const product = await Product.findOneAndDelete({ _id: id, merchant });
 
+  // delete product tools as well
+
   if (!product) {
     throw new Error("Product not found");
   }
 
+  await ProductTool.deleteMany({ product: product._id });
   return successResponse(res, product, "Product deleted successfully", 200);
 });
 
@@ -206,6 +254,29 @@ const updateProductStatus = asyncHandler(async (req, res) => {
   );
 });
 
+//get product tools configuration
+const getProductToolsConfig = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const merchant = req.user._id;
+
+  const product = await Product.findOne({ _id: id, merchant });
+
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  const productTools = await ProductTool.find({
+    product: product._id,
+  }).populate("tool");
+
+  return successResponse(
+    res,
+    productTools,
+    "Product tools configuration retrieved successfully",
+    200
+  );
+});
+
 module.exports = {
   createProduct,
   getProducts,
@@ -213,4 +284,5 @@ module.exports = {
   updateProduct,
   deleteProduct,
   updateProductStatus,
+  getProductToolsConfig,
 };

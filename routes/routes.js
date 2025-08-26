@@ -50,6 +50,7 @@ const {
   updateProduct,
   deleteProduct,
   updateProductStatus,
+  getProductToolsConfig,
 } = require("../controller/merchantController/productController");
 const routes = express.Router();
 
@@ -113,5 +114,6 @@ routes.post("/products", verifyToken, validateRequest(productSchema), createProd
 routes.put("/products/:id", verifyToken, validateRequest(productUpdateSchema), updateProduct);
 routes.delete("/products/:id", verifyToken, deleteProduct);
 routes.patch("/products/:id/status", verifyToken, validateRequest(productStatusSchema), updateProductStatus);
+routes.get("/products/:id/tools-config", verifyToken, getProductToolsConfig);
 
 module.exports = routes;
