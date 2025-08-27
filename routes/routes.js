@@ -43,6 +43,8 @@ const {
   productQuerySchema,
 } = require("../validation/productValidations");
 const { toolSchema } = require("../validation/toolValidations");
+const { patternSchema, patternUpdateSchema, patternQuerySchema } = require("../validation/patternValidations");
+
 const {
   createProduct,
   getProducts,
@@ -51,6 +53,14 @@ const {
   deleteProduct,
   updateProductStatus,
 } = require("../controller/merchantController/productController");
+const {
+  getPatterns,
+  getPattern,
+  createPattern,
+  updatePattern,
+  getPatternsByCategory,
+} = require("../controller/merchantController/patternController");
+
 const routes = express.Router();
 
 //sign up login and authentication routes
@@ -113,5 +123,15 @@ routes.post("/products", verifyToken, validateRequest(productSchema), createProd
 routes.put("/products/:id", verifyToken, validateRequest(productUpdateSchema), updateProduct);
 routes.delete("/products/:id", verifyToken, deleteProduct);
 routes.patch("/products/:id/status", verifyToken, validateRequest(productStatusSchema), updateProductStatus);
+
+//pattern routes
+routes.post("/patterns", verifyToken, validateRequest(patternSchema), createPattern);
+routes.get("/patterns", verifyToken, validateRequest(patternQuerySchema), getPatterns);
+routes.get("/patterns/category/:category", verifyToken, getPatternsByCategory);
+routes.get("/patterns/:id", verifyToken, getPattern);
+routes.put("/patterns/:id", verifyToken, validateRequest(patternUpdateSchema), updatePattern);
+
+
+
 
 module.exports = routes;
