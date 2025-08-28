@@ -29,7 +29,7 @@ app.use(
     ":method :url :status :res[content-length] - :response-time ms - req-body: :req-body"
   )
 );
-
+console.log("----process.env.CORS_ORIGIN----->",process.env.CORS_ORIGIN)
 app.use(
   cors({
     origin: [process.env.CORS_ORIGIN, "http://localhost:5173"],
