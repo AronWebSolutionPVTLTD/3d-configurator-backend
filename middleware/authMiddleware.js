@@ -1,9 +1,8 @@
 const jwt = require("jsonwebtoken");
 const User = require("../model/User");
 
-const dotenv = require("dotenv");   
+const dotenv = require("dotenv");
 dotenv.config();
-
 
 // 🔐 Verify and load user
 const verifyToken = async (req, res, next) => {
@@ -11,13 +10,15 @@ const verifyToken = async (req, res, next) => {
     const token = req.header("Authorization")?.replace("Bearer ", "");
 
     if (!token) {
-      return res.status(401).json({ message: "No token, authorization denied" });
+      return res
+        .status(401)
+        .json({ message: "No token, authorization denied" });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const user = await User.findById(decoded.userId);
-    
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -48,6 +49,21 @@ const canModifyUser = async (req, res, next) => {
   });
 };
 
+const validateRequest = (schema) => {
+  return (req, res, next) => {
+    const { error } = schema.validate(req.body, { abortEarly: false });
+    if (error) {
+      return res.status(400).json({
+        status: "error",
+        data: null,
+        statusCode: 400,
+        message: error.details.map((d) => d.message),
+      });
+    }
+    next();
+  };
+};
+
 module.exports = {
   verifyToken,
   canModifyUser,
@@ -67,4 +83,5 @@ module.exports = {
       next();
     });
   },
+  validateRequest,
 };
