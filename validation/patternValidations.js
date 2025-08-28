@@ -25,68 +25,18 @@ const patternSchema = Joi.object({
     'string.pattern.base': 'Default color must be a valid hex color code'
   }),
   defaultBackgroundColor: Joi.string().pattern(/^#[0-9A-F]{6}$/i).default('#FFFFFF').messages({
-    'string.pattern.base': 'Default background color must be a valid hex color code'
+    'string.pattern.base': 'Default background color must be a valid hex color code'    
+  }),
+  tools: Joi.array().items(Joi.string().hex().length(24)).optional().messages({
+    'array.base': 'Tools must be an array',
+    'string.hex': 'Tool ID must be a valid MongoDB ObjectId',
+    'string.length': 'Tool ID must be 24 characters long'
   }),
   metadata: Joi.object().pattern(Joi.string(), Joi.string()).optional()
 });
 
-// Pattern update validation schema (all fields optional)
-const patternUpdateSchema = Joi.object({
-  name: Joi.string().optional().trim().min(1).max(100).messages({
-    'string.min': 'Pattern name must be at least 1 character long',
-    'string.max': 'Pattern name cannot exceed 100 characters'
-  }),
-  description: Joi.string().optional().trim().max(500).messages({
-    'string.max': 'Description cannot exceed 500 characters'
-  }),
-  category: Joi.string().valid('geometric', 'stripes', 'abstract', 'texture', 'custom').default('geometric'),
-  image: Joi.string().optional().uri().messages({
-    'string.uri': 'Pattern image must be a valid URL'
-  }),
-  defaultScale: Joi.number().min(0.1).max(10).optional().messages({
-    'number.min': 'Default scale must be at least 0.1',
-    'number.max': 'Default scale cannot exceed 10'
-  }),
-  defaultAngle: Joi.number().min(0).max(360).optional().messages({
-    'number.min': 'Default angle must be at least 0',
-    'number.max': 'Default angle cannot exceed 360'
-  }),
-  defaultColor: Joi.string().pattern(/^#[0-9A-F]{6}$/i).optional().messages({
-    'string.pattern.base': 'Default color must be a valid hex color code'
-  }),
-  defaultBackgroundColor: Joi.string().pattern(/^#[0-9A-F]{6}$/i).optional().messages({
-    'string.pattern.base': 'Default background color must be a valid hex color code'
-  }),
-  status: Joi.string().valid('draft', 'active', 'inactive', 'archived').optional().messages({
-    'any.only': 'Status must be one of: draft, active, inactive, archived'
-  }),
-  metadata: Joi.object().pattern(Joi.string(), Joi.string()).optional()
-});
 
-// Pattern status update validation schema
-const patternStatusSchema = Joi.object({
-  status: Joi.string().valid('draft', 'active', 'inactive', 'archived').required().messages({
-    'any.only': 'Status must be one of: draft, active, inactive, archived',
-    'any.required': 'Status is required'
-  })
-});
-
-// Pattern query validation schema
-const patternQuerySchema = Joi.object({
-  status: Joi.string().valid('draft', 'active', 'inactive', 'archived').optional().messages({
-    'any.only': 'Status must be one of: draft, active, inactive, archived'
-  }),
-  category: Joi.string().valid('geometric', 'stripes', 'abstract', 'texture', 'custom').optional().messages({
-    'any.only': 'Category must be one of: geometric, stripes, abstract, texture, custom'
-  }),
-  merchant: Joi.string().hex().optional().messages({
-    'string.hex': 'Merchant ID must be a valid MongoDB ObjectId'
-  })
-});
 
 module.exports = {
   patternSchema,
-  patternUpdateSchema,
-  patternStatusSchema,
-  patternQuerySchema
 };

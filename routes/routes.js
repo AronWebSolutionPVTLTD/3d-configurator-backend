@@ -60,6 +60,7 @@ const {
   createPattern,
   updatePattern,
   getPatternsByCategory,
+  deletePattern,
 } = require("../controller/merchantController/patternController");
 
 const routes = express.Router();
@@ -132,6 +133,7 @@ routes.get("/patterns", verifyToken, validateRequest(patternQuerySchema), getPat
 routes.get("/patterns/category/:category", verifyToken, getPatternsByCategory);
 routes.get("/patterns/:id", verifyToken, getPattern);
 routes.put("/patterns/:id", verifyToken, validateRequest(patternUpdateSchema), updatePattern);
+routes.delete("/patterns/:id", verifyToken, deletePattern);
 
 
 

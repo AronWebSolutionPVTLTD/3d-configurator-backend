@@ -1,10 +1,11 @@
+const { asyncHandler } = require("../../middleware/asyncHandler");
 const Pattern = require("../../model/Pattern");
 const { sendResponse } = require("../../helper/status");
 const Tool = require("../../model/Tool");
 const ProductTool = require("../../model/ProductTool");
 
 // Get all patterns with optional filtering
-const getPatterns = async (req, res) => {
+const getPatterns = asyncHandler(async (req, res) => {
     try {
         const { status, category, merchant } = req.query;
         
@@ -35,10 +36,10 @@ const getPatterns = async (req, res) => {
         console.error("Error fetching patterns:", error);
         return sendResponse(res, 500, false, error.message);
     }
-};
+});
 
 // Get pattern by ID
-const getPattern = async (req, res) => {
+const getPattern = asyncHandler(async (req, res) => {
     try {
         const { id } = req.params;
         
@@ -55,10 +56,10 @@ const getPattern = async (req, res) => {
         console.error("Error fetching pattern:", error);
         return sendResponse(res, 500, false, error.message);
     }
-};
+});
 
 // Create a new pattern
-const createPattern = async (req, res) => {
+const createPattern = asyncHandler(async (req, res) => {
     try {
         const { name, description, category, image, defaultScale, defaultAngle, defaultColor, defaultBackgroundColor, tools } = req.body;
         
@@ -85,8 +86,7 @@ const createPattern = async (req, res) => {
               }).populate({
                 path: "relatedModels.ref",
               });
-        
-              const ProductTool = tools.map((toolId) => {
+              const productTool = tools.map((toolId) => {
                 const configTool = toolConfigurations.find((tool) =>
                   tool._id.equals(toolId)
                 );
@@ -98,14 +98,13 @@ const createPattern = async (req, res) => {
                     }))
                   : [];
                 return {
-                  pattern: isCreated._id,
+                  product: isCreated._id,
                   tool: toolId,
                   config: configuration,
                 };
-              });
-        
-              await ProductTool.insertMany(ProductTool);
-            }
+              });              
+              await ProductTool.insertMany(productTool);
+            }        
           }
         
         const populatedPattern = await Pattern.findById(pattern._id)
@@ -117,42 +116,85 @@ const createPattern = async (req, res) => {
         console.error("Error creating pattern:", error);
         return sendResponse(res, 500, false, error.message);
     }
-};
+});
 
 // Update pattern
-const updatePattern = async (req, res) => {
+const updatePattern = asyncHandler(async (req, res) => {
     try {
         const { id } = req.params;
-        const updateData = req.body;
+        const { tools = [], ...updateData } = req.body;
         
-        // Remove fields that shouldn't be updated
-        delete updateData._id;
-        delete updateData.merchant;
-        delete updateData.createdAt;
-        delete updateData.updatedAt;
-        
-        const pattern = await Pattern.findByIdAndUpdate(
-            id, 
-            updateData, 
+        const pattern = await Pattern.findOneAndUpdate(
+            { _id: id, merchant },
+            { ...updateData, tools },
             { new: true, runValidators: true }
-        )
-        .populate('merchant', 'name email')
-        .select('-__v');
-        
+          )
+            .populate("merchant", "name email")
+            .populate("tools");
+    
         if (!pattern) {
             return sendResponse(res, 404, false, "Pattern not found");
         }
         
+        if (tools && tools.length > 0) {
+            // Get already linked tools from ProductTool
+            const existingTools = await ProductTool.find({
+              product: pattern._id,
+            }).select("tool");
+            const existingToolIds = existingTools.map((pt) => pt.tool.toString());
+        
+            // Find which ones are NEW
+            const newToolIds = tools.filter(
+              (toolId) => !existingToolIds.includes(toolId.toString())
+            );
+        
+            // Find which ones need to be REMOVED
+            const removedToolIds = existingToolIds.filter(
+              (toolId) => !tools.includes(toolId.toString())
+            );
+        
+            // Insert NEW tools
+            if (newToolIds.length > 0) {
+              const toolConfigurations = await Tool.find({
+                _id: { $in: newToolIds },
+              }).populate("relatedModels.ref");
+        
+              const productTools = newToolIds.map((toolId) => {
+                const configTool = toolConfigurations.find((t) => t._id.equals(toolId));
+                const configuration = configTool
+                  ? configTool.relatedModels.map((rm) => ({
+                      ...(rm.ref?._doc || rm.ref),
+                      model: rm.model,
+                    }))
+                  : [];
+        
+                return {
+                  product: product._id,
+                  tool: toolId,
+                  config: configuration,
+                };
+              });
+        
+              await ProductTool.insertMany(productTools);
+            }
+        
+            // Delete REMOVED tools
+            if (removedToolIds.length > 0) {
+              await ProductTool.deleteMany({
+                product: product._id,
+                tool: { $in: removedToolIds },
+              });
+            }
+          }
         return sendResponse(res, 200, true, "Pattern updated successfully", pattern);
     } catch (error) {
         console.error("Error updating pattern:", error);
         return sendResponse(res, 500, false, error.message);
     }
-};
-
+});
 
 // Get patterns by category
-const getPatternsByCategory = async (req, res) => {
+const getPatternsByCategory = asyncHandler(async (req, res) => {
     try {
         const { category } = req.params;
         const { status = 'active' } = req.query;
@@ -170,8 +212,28 @@ const getPatternsByCategory = async (req, res) => {
         console.error("Error fetching patterns by category:", error);
         return sendResponse(res, 500, false, error.message);
     }
-};
+});
 
+// Delete pattern
+const deletePattern = asyncHandler(async (req, res) => {
+    try {
+        const { id } = req.params;
+        const merchant = req.user._id;
+
+        const product = await Pattern.findByIdAndDelete({ _id: id, merchant });
+          
+        if (!product) {
+            throw new Error("Product not found");
+        }
+
+        await ProductTool.deleteMany({ product: product._id });
+
+        return sendResponse(res, 200, true, "Pattern deleted successfully");
+    } catch (error) {
+        console.error("Error deleting pattern:", error);
+        return sendResponse(res, 500, false, error.message);
+    }
+});
 
 
 module.exports = {
@@ -180,4 +242,5 @@ module.exports = {
     createPattern,
     updatePattern,
     getPatternsByCategory,
+    deletePattern
 };
