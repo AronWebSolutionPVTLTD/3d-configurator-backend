@@ -44,6 +44,7 @@ const {
 } = require("../validation/productValidations");
 const { toolSchema } = require("../validation/toolValidations");
 const { patternSchema, patternUpdateSchema, patternQuerySchema } = require("../validation/patternValidations");
+const { colorSchema, colorUpdateSchema, colorStatusSchema, colorQuerySchema } = require("../validation/colorValidations");
 
 const {
   createProduct,
@@ -62,6 +63,11 @@ const {
   getPatternsByCategory,
   deletePattern,
 } = require("../controller/merchantController/patternController");
+const {
+  createColor,
+  getColors,
+  getColor,
+} = require("../controller/merchantController/colorController");
 
 const routes = express.Router();
 
@@ -135,7 +141,9 @@ routes.get("/patterns/:id", verifyToken, getPattern);
 routes.put("/patterns/:id", verifyToken, validateRequest(patternUpdateSchema), updatePattern);
 routes.delete("/patterns/:id", verifyToken, deletePattern);
 
-
-
+//color routes
+routes.post("/colors", verifyToken, validateRequest(colorSchema), createColor);
+routes.get("/colors", verifyToken, getColors);
+routes.get("/colors/:id", verifyToken, getColor);
 
 module.exports = routes;
