@@ -67,6 +67,8 @@ const {
   createColor,
   getColors,
   getColor,
+  updateColor,
+  deleteColor,
 } = require("../controller/merchantController/colorController");
 
 const routes = express.Router();
@@ -145,5 +147,7 @@ routes.delete("/patterns/:id", verifyToken, deletePattern);
 routes.post("/colors", verifyToken, validateRequest(colorSchema), createColor);
 routes.get("/colors", verifyToken, getColors);
 routes.get("/colors/:id", verifyToken, getColor);
+routes.put("/colors/:id", verifyToken, validateRequest(colorUpdateSchema), updateColor);
+routes.delete("/colors/:id", verifyToken, deleteColor);
 
 module.exports = routes;
