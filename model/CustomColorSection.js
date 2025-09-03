@@ -13,9 +13,14 @@ const customColorSectionSchema = new Schema(
         value: { type: String, default: "#fff" },
         // Gradient fields
         gradient: { type: Boolean, default: false },
-        gradientConfig: { type: Schema.Types.Mixed, default: {} }
-      }
-    ]
+        gradientAngle: { type: Number, default: 0 },
+        gradientBalance: { type: Number, default: 0.5 },
+        gradientFeather: { type: Number, default: 0 },
+        // gradientColors: [
+        //   { color: String, position: Number }
+        // ]
+      },
+    ],
   },
   { timestamps: true }
 );

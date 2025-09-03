@@ -3,6 +3,7 @@ const Product = require("../../model/Product");
 const ProductTool = require("../../model/ProductTool");
 const Tool = require("../../model/Tool");
 const { successResponse } = require("../../utils/response");
+const mongoose = require("mongoose");
 
 // Create a new product
 const createProduct = asyncHandler(async (req, res) => {
@@ -277,6 +278,205 @@ const getProductToolsConfig = asyncHandler(async (req, res) => {
   );
 });
 
+const updateProductToolsConfig = asyncHandler(async (req, res) => {
+  const { id, toolId, configOptionId } = req.params;
+  const merchant = req.user._id;
+  const { config } = req.body;
+
+  console.log(id, toolId, configOptionId, config);
+
+  const product = await Product.findOne({ _id: id, merchant });
+
+  if (!product) {
+    throw new Error("Product not found");
+  }
+  // console.log(product);
+
+  // First find the existing product tool to get current config
+  const existingProductTool = await ProductTool.findOne({
+    product: product._id,
+    tool: toolId,
+  });
+
+  if (!existingProductTool) {
+    throw new Error("Product tool not found");
+  }
+
+  // Update with the new config using MongoDB's arrayFilters for efficient updates
+  // Build update object with prefix "config.$[elem]."
+  const updateFields = {};
+  for (const [key, value] of Object.entries(config)) {
+    updateFields[`config.$[elem].${key}`] = value;
+  }
+
+  // Use updateOne with arrayFilters to update specific element in config array
+  const updateResult = await ProductTool.updateOne(
+    {
+      product: product._id,
+      tool: toolId,
+    },
+    {
+      $set: updateFields,
+    },
+    {
+      arrayFilters: [
+        { "elem._id": new mongoose.Types.ObjectId(configOptionId) },
+      ],
+    }
+  );
+
+  if (updateResult.matchedCount === 0) {
+    throw new Error("Product tool not found");
+  }
+
+  if (updateResult.modifiedCount === 0) {
+    throw new Error("No changes made to configuration");
+  }
+
+  // Fetch the updated document to return
+  const productTools = await ProductTool.findOne({
+    product: product._id,
+    tool: toolId,
+  }).populate("tool");
+
+  if (!productTools) {
+    throw new Error("Product tool not found");
+  }
+
+  return successResponse(
+    res,
+    productTools,
+    "Product tools configuration updated successfully",
+    200
+  );
+});
+
+const addConfigoptionToTool = asyncHandler(async (req, res) => {
+  const { id, toolId } = req.params;
+  const merchant = req.user._id;
+  const { config } = req.body;
+
+  console.log("Adding new config option:", id, toolId, config);
+
+  // Verify product exists and belongs to merchant
+  const product = await Product.findOne({ _id: id, merchant });
+
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  // Check if product tool exists
+  const existingProductTool = await ProductTool.findOne({
+    product: product._id,
+    tool: toolId,
+  });
+
+  if (!existingProductTool) {
+    throw new Error("Product tool not found");
+  }
+
+  // Add new config option to the config array
+  // Ensure the new config has an _id and other required fields
+  const newConfigOption = {
+    _id: new mongoose.Types.ObjectId(),
+    ...config,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    __v: 0
+  };
+
+  const updateResult = await ProductTool.updateOne(
+    {
+      product: product._id,
+      tool: toolId,
+    },
+    {
+      $push: { config: newConfigOption },
+    }
+  );
+
+  if (updateResult.matchedCount === 0) {
+    throw new Error("Product tool not found");
+  }
+
+  if (updateResult.modifiedCount === 0) {
+    throw new Error("Failed to add new config option");
+  }
+
+  // Fetch the updated document to return
+  const productTools = await ProductTool.findOne({
+    product: product._id,
+    tool: toolId,
+  }).populate("tool");
+
+  if (!productTools) {
+    throw new Error("Product tool not found");
+  }
+
+  return successResponse(
+    res,
+    productTools,
+    "New config option added successfully",
+    200
+  );
+});
+
+const deleteConfigOption = asyncHandler(async (req, res) => {
+  const { id, toolId, configOptionId } = req.params;
+  const merchant = req.user._id;
+
+  // Verify product belongs to merchant
+  const product = await Product.findOne({ _id: id, merchant });
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  // Remove the specific config option from config array
+  const productTool = await ProductTool.findOneAndUpdate(
+    {
+      product: product._id,
+      tool: toolId,
+    },
+    {
+      $pull: { config: { _id: new mongoose.Types.ObjectId(configOptionId) } },
+    },
+    { new: true } // return updated document
+  );
+
+  if (!productTool) {
+    throw new Error("Product tool not found");
+  }
+
+  return successResponse(
+    res,
+    productTool,
+    "Config option deleted successfully",
+    200
+  );
+});
+
+const deleteProductTool = asyncHandler(async (req, res) => {
+  const { id, toolId } = req.params;
+  const merchant = req.user._id;
+  const product = await Product.findOne({ _id: id, merchant });
+  if (!product) {
+    throw new Error("Product not found");
+  }
+  const productTool = await ProductTool.findOneAndDelete({
+    product: product._id,
+    tool: toolId,
+  });
+  if (!productTool) {
+    throw new Error("Product tool not found");
+  }
+  return successResponse(
+    res,
+    productTool,
+    "Product tool deleted successfully",
+    200
+  );
+});
+
 module.exports = {
   createProduct,
   getProducts,
@@ -285,4 +485,8 @@ module.exports = {
   deleteProduct,
   updateProductStatus,
   getProductToolsConfig,
+  updateProductToolsConfig,
+  addConfigoptionToTool,
+  deleteProductTool,
+  deleteConfigOption,
 };

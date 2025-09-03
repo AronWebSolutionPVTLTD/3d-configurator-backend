@@ -54,6 +54,10 @@ const {
   deleteProduct,
   updateProductStatus,
   getProductToolsConfig,
+  updateProductToolsConfig,
+  addConfigoptionToTool,
+  deleteProductTool,
+  deleteConfigOption,
 } = require("../controller/merchantController/productController");
 const {
   getPatterns,
@@ -134,7 +138,10 @@ routes.put("/products/:id", verifyToken, validateRequest(productUpdateSchema), u
 routes.delete("/products/:id", verifyToken, deleteProduct);
 routes.patch("/products/:id/status", verifyToken, validateRequest(productStatusSchema), updateProductStatus);
 routes.get("/products/:id/tools-config", verifyToken, getProductToolsConfig);
-
+routes.put("/products/:id/tool-update/:toolId/:configOptionId", verifyToken, updateProductToolsConfig);
+routes.post("/products/:id/add-config-option/:toolId", verifyToken, addConfigoptionToTool);
+routes.delete("/products/:id/delete-config-option/:toolId/:configOptionId", verifyToken, deleteConfigOption);
+routes.delete("/products/:id/delete-tool/:toolId", verifyToken, deleteProductTool);
 //pattern routes
 routes.post("/patterns", verifyToken, validateRequest(patternSchema), createPattern);
 routes.get("/patterns", verifyToken, validateRequest(patternQuerySchema), getPatterns);

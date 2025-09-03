@@ -267,7 +267,7 @@ const toolsMenuWithOptions = [
     label: "Patterns",
     description: "Apply a background pattern",
     options: { patterns },
-  },
+  },  
   {
     value: "numbers",
     label: "Numbers",
