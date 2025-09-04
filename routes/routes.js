@@ -134,7 +134,7 @@ routes.post("/tools", verifyToken, validateRequest(toolSchema), createTool);
 routes.get("/products", verifyToken, validateRequest(productQuerySchema), getProducts);
 routes.get("/products/:id", verifyToken, getProduct);
 routes.post("/products", verifyToken, validateRequest(productSchema), createProduct);
-routes.put("/products/:id", verifyToken, validateRequest(productUpdateSchema), updateProduct);
+routes.put("/products/:id", verifyToken, validateRequest(productUpdateSchema), updateProduct); 
 routes.delete("/products/:id", verifyToken, deleteProduct);
 routes.patch("/products/:id/status", verifyToken, validateRequest(productStatusSchema), updateProductStatus);
 routes.get("/products/:id/tools-config", verifyToken, getProductToolsConfig);
