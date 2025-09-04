@@ -10,6 +10,7 @@ const JerseyType = require("../model/JerseyType.js");
 const DesignTemplate = require("../model/DesignTemplate.js");
 const FeatureMenu = require("../model/FeatureMenu.js");
 const CustomColorSection = require("../model/CustomColorSection.js");
+const PatternArea = require("../model/PatternArea.js");
 
 // Data
 const {
@@ -37,6 +38,7 @@ async function seed() {
       DesignTemplate.deleteMany({}),
       FeatureMenu.deleteMany({}),
       CustomColorSection.deleteMany({}),
+      PatternArea.deleteMany({}),
     ]);
 
     console.log("🗑 Cleared old data");
@@ -95,7 +97,101 @@ async function seed() {
       }
 
       if (value === "pattern") {
-        // Note: patterns already inserted separately
+        // First, get a pattern to assign (assuming patterns were already inserted)
+        const firstPattern = await Pattern.findOne({});
+        
+        const docs = await PatternArea.insertMany([
+          {
+            id: "front",
+            name: "Front",
+            label: "Front",
+            active: true,
+            selectedPattern: firstPattern ? firstPattern._id : null,
+            scale: 1,
+            angle: 0,
+            translateX: 0,
+            translateY: 0,
+            background: ""
+          },
+          {
+            id: "back",
+            name: "Back",
+            label: "Back",
+            active: false,
+            selectedPattern: null,
+            scale: 1,
+            angle: 0,
+            translateX: 0,
+            translateY: 0,
+            background: ""
+          },
+          {
+            id: "rightSleeve",
+            name: "Right Sleeve",
+            label: "Right sleeve",
+            active: false,
+            selectedPattern: null,
+            scale: 1,
+            angle: 0,
+            translateX: 0,
+            translateY: 0,
+            background: ""
+          },
+          {
+            id: "leftSleeve",
+            name: "Left Sleeve",
+            label: "Left sleeve",
+            active: false,
+            selectedPattern: null,
+            scale: 1,
+            angle: 0,
+            translateX: 0,
+            translateY: 0,
+            background: ""
+          },
+          {
+            id: "collar",
+            name: "Collar",
+            label: "Collar",
+            active: false,
+            selectedPattern: null,
+            scale: 1,
+            angle: 0,
+            translateX: 0,
+            translateY: 0,
+            background: ""
+          },
+          {
+            id: "element1",
+            name: "Element 1",
+            label: "Element 1",
+            active: false,
+            selectedPattern: null,
+            scale: 1,
+            angle: 0,
+            translateX: 0,
+            translateY: 0,
+            background: ""
+          },
+          {
+            id: "element2",
+            name: "Element 2",
+            label: "Element 2",
+            active: false,
+            selectedPattern: null,
+            scale: 1,
+            angle: 0,
+            translateX: 0,
+            translateY: 0,
+            background: ""
+          }
+        ]);
+        docs.forEach((doc) => {
+          toolDoc.relatedModels.push({
+            model: "PatternArea",
+            ref: doc._id,
+          });
+        });
       }
 
       // Numbers, names, text, logos → store configs inside Tool itself for now

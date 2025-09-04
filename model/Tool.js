@@ -4,6 +4,7 @@ const { Schema, model } = mongoose;
 require("./JerseyType"); // 👈 registers JerseyType
 require("./DesignTemplate"); // 👈 registers DesignTemplate
 require("./Pattern"); // 👈 registers Pattern
+require("./PatternArea"); // 👈 registers PatternArea
 require("./ColorSwatch"); // 👈 registers ColorSwatch
 require("./FeatureMenu"); // 👈 registers Customization
 require("./CustomColorSection");

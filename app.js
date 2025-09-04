@@ -45,7 +45,14 @@ app.use(
   })
 );
 //db connection
-connectDB();
+
+connectDB()
+  .then(() => {
+    console.log("Connected to MongoDB");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 app.use("/api/v1", allRouter);
 

@@ -136,7 +136,7 @@ const toolsMenuWithOptions = [
           priceNote: "Best value",
           premium: true,
           tag: "Recommended",
-          image: "/jerseys/pro.png",
+          image: "/tshirt-oneck-01.png",
         },
         {
           name: "Premium",
@@ -147,7 +147,7 @@ const toolsMenuWithOptions = [
           priceNote: "Premium pick",
           premium: true,
           tag: "Best quality",
-          image: "/jerseys/premium.png",
+          image: "/tshirt-oneck-01.png",
         },
         {
           name: "Goalie",
@@ -158,7 +158,7 @@ const toolsMenuWithOptions = [
           priceNote: "For goalkeepers",
           premium: false,
           tag: "Special",
-          image: "/jerseys/goalie.png",
+          image: "/tshirt-oneck-01.png",
         },
       ],
     },
@@ -169,10 +169,10 @@ const toolsMenuWithOptions = [
     description: "Choose from existing designs",
     options: {
       designs: [
-        { value: "d1", src: "/designs/design1.png", category: "nhl" },
-        { value: "d2", src: "/designs/design2.png", category: "all" },
-        { value: "d3", src: "/designs/design3.png", category: "all" },
-        { value: "d4", src: "/designs/design4.png", category: "nhl" },
+        { value: "d1", src: "/tshirt-oneck-01.png", category: "nhl" },
+        { value: "d2", src: "/tshirt-oneck-02.png", category: "all" },
+        { value: "d3", src: "/tshirt-oneck-03.png", category: "all" },
+        { value: "d4", src: "/tshirt-oneck-04.png", category: "nhl" },
       ],
     },
   },
