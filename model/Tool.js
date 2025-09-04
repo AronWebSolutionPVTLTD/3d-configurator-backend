@@ -34,7 +34,7 @@ module.exports = Tool;
   "relatedModels": [
     {
       "model": "ColorSwatch",
-      "ref": "64f8a1b2c3d4e5f678901240"
+      "ref": "68ad5500bbbdd6188f234da4"
     },
     {
       "model": "CustomColorSection",
