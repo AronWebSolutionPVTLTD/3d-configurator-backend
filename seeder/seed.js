@@ -11,6 +11,7 @@ const DesignTemplate = require("../model/DesignTemplate.js");
 const FeatureMenu = require("../model/FeatureMenu.js");
 const CustomColorSection = require("../model/CustomColorSection.js");
 const PatternArea = require("../model/PatternArea.js");
+const Number = require("../model/Number.js");
 
 // Data
 const {
@@ -18,8 +19,11 @@ const {
   patterns,
   toolsMenuWithOptions,
 } = require("../data/toolsMenuData.js");
+const { seedNumbers, numberSeedData } = require("./numberSeeder.js");
 
-const MONGO_URI = process.env.MONGODB_URI || "mongodb+srv://3d-db:lxnHi3VIJq2VhJtr@cluster0.54afd9b.mongodb.net/3d-configurator";
+const MONGO_URI =
+  process.env.MONGODB_URI ||
+  "mongodb+srv://3d-db:lxnHi3VIJq2VhJtr@cluster0.54afd9b.mongodb.net/3d-configurator";
 
 async function seed() {
   try {
@@ -39,6 +43,7 @@ async function seed() {
       FeatureMenu.deleteMany({}),
       CustomColorSection.deleteMany({}),
       PatternArea.deleteMany({}),
+      Number.deleteMany({}),
     ]);
 
     console.log("🗑 Cleared old data");
@@ -99,7 +104,7 @@ async function seed() {
       if (value === "pattern") {
         // First, get a pattern to assign (assuming patterns were already inserted)
         const firstPattern = await Pattern.findOne({});
-        
+
         const docs = await PatternArea.insertMany([
           {
             id: "front",
@@ -111,7 +116,7 @@ async function seed() {
             angle: 0,
             translateX: 0,
             translateY: 0,
-            background: ""
+            background: "",
           },
           {
             id: "back",
@@ -123,7 +128,7 @@ async function seed() {
             angle: 0,
             translateX: 0,
             translateY: 0,
-            background: ""
+            background: "",
           },
           {
             id: "rightSleeve",
@@ -135,7 +140,7 @@ async function seed() {
             angle: 0,
             translateX: 0,
             translateY: 0,
-            background: ""
+            background: "",
           },
           {
             id: "leftSleeve",
@@ -147,7 +152,7 @@ async function seed() {
             angle: 0,
             translateX: 0,
             translateY: 0,
-            background: ""
+            background: "",
           },
           {
             id: "collar",
@@ -159,7 +164,7 @@ async function seed() {
             angle: 0,
             translateX: 0,
             translateY: 0,
-            background: ""
+            background: "",
           },
           {
             id: "element1",
@@ -171,7 +176,7 @@ async function seed() {
             angle: 0,
             translateX: 0,
             translateY: 0,
-            background: ""
+            background: "",
           },
           {
             id: "element2",
@@ -183,14 +188,21 @@ async function seed() {
             angle: 0,
             translateX: 0,
             translateY: 0,
-            background: ""
-          }
+            background: "",
+          },
         ]);
         docs.forEach((doc) => {
           toolDoc.relatedModels.push({
             model: "PatternArea",
             ref: doc._id,
           });
+        });
+      }
+      if (value === "numbers") {
+        // saved number make relation for the tool
+        const numbers = await Number.insertMany(numberSeedData);
+        numbers.forEach((number) => {
+          toolDoc.relatedModels.push({ model: "Number", ref: number._id });
         });
       }
 
@@ -200,6 +212,7 @@ async function seed() {
       await toolDoc.save();
       console.log(`✅ Inserted tool: ${value}`);
     }
+
 
     console.log("🌱 Seeding completed!");
     process.exit(0);

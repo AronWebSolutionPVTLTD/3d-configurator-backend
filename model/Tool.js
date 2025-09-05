@@ -8,6 +8,7 @@ require("./PatternArea"); // 👈 registers PatternArea
 require("./ColorSwatch"); // 👈 registers ColorSwatch
 require("./FeatureMenu"); // 👈 registers Customization
 require("./CustomColorSection");
+require("./Number"); // 👈 registers Number
 
 const toolSchema = new Schema(
   {
