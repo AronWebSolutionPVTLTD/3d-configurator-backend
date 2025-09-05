@@ -43,7 +43,6 @@ const {
   productQuerySchema,
 } = require("../validation/productValidations");
 const { toolSchema } = require("../validation/toolValidations");
-const { patternSchema, patternUpdateSchema, patternQuerySchema } = require("../validation/patternValidations");
 
 const {
   createProduct,
@@ -53,15 +52,13 @@ const {
   deleteProduct,
   updateProductStatus,
   getProductToolsConfig,
+  updateProductToolsConfig,
+  addConfigoptionToTool,
+  deleteProductTool,
+  deleteConfigOption,
 } = require("../controller/merchantController/productController");
-const {
-  getPatterns,
-  getPattern,
-  createPattern,
-  updatePattern,
-  getPatternsByCategory,
-  deletePattern,
-} = require("../controller/merchantController/patternController");
+
+
 
 const routes = express.Router();
 
@@ -126,14 +123,10 @@ routes.put("/products/:id", verifyToken, validateRequest(productUpdateSchema), u
 routes.delete("/products/:id", verifyToken, deleteProduct);
 routes.patch("/products/:id/status", verifyToken, validateRequest(productStatusSchema), updateProductStatus);
 routes.get("/products/:id/tools-config", verifyToken, getProductToolsConfig);
-
-//pattern routes
-routes.post("/patterns", verifyToken, validateRequest(patternSchema), createPattern);
-routes.get("/patterns", verifyToken, validateRequest(patternQuerySchema), getPatterns);
-routes.get("/patterns/category/:category", verifyToken, getPatternsByCategory);
-routes.get("/patterns/:id", verifyToken, getPattern);
-routes.put("/patterns/:id", verifyToken, validateRequest(patternUpdateSchema), updatePattern);
-routes.delete("/patterns/:id", verifyToken, deletePattern);
+routes.put("/products/:id/tool-update/:toolId/:configOptionId", verifyToken, updateProductToolsConfig);
+routes.post("/products/:id/add-config-option/:toolId", verifyToken, addConfigoptionToTool);
+routes.delete("/products/:id/delete-config-option/:toolId/:configOptionId", verifyToken, deleteConfigOption);
+routes.delete("/products/:id/delete-tool/:toolId", verifyToken, deleteProductTool);
 
 
 

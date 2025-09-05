@@ -25,3 +25,21 @@ const toolSchema = new Schema(
 
 const Tool = model("Tool", toolSchema);
 module.exports = Tool;
+
+
+/*{
+  "value": "color",
+  "label": "Colors",
+  "description": "Advanced color customization with support for solid colors, gradients, and multiple color sections including body, sleeves, collar, and details",
+  "relatedModels": [
+    {
+      "model": "ColorSwatch",
+      "ref": "68ad5500bbbdd6188f234da4"
+    },
+    {
+      "model": "CustomColorSection",
+      "ref": "68b57f6e29f2b5992b2a3b90"
+    }
+  ]
+}*/
+
