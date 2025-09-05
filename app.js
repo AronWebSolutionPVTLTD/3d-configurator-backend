@@ -29,10 +29,20 @@ app.use(
     ":method :url :status :res[content-length] - :response-time ms - req-body: :req-body"
   )
 );
-
+console.log("----process.env.CORS_ORIGIN----->",process.env.CORS_ORIGIN)
+const allowedOrigins = [
+  "https://3d-configurator-admin.vercel.app",
+  "http://localhost:5173",
+];
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:5173"],
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS: " + origin));
+      }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],

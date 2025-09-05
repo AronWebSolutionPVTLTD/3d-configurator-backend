@@ -43,8 +43,6 @@ const {
   productQuerySchema,
 } = require("../validation/productValidations");
 const { toolSchema } = require("../validation/toolValidations");
-const { patternSchema, patternUpdateSchema, patternQuerySchema } = require("../validation/patternValidations");
-const { colorSchema, colorUpdateSchema, colorStatusSchema, colorQuerySchema } = require("../validation/colorValidations");
 
 const {
   createProduct,
@@ -59,21 +57,8 @@ const {
   deleteProductTool,
   deleteConfigOption,
 } = require("../controller/merchantController/productController");
-const {
-  getPatterns,
-  getPattern,
-  createPattern,
-  updatePattern,
-  getPatternsByCategory,
-  deletePattern,
-} = require("../controller/merchantController/patternController");
-const {
-  createColor,
-  getColors,
-  getColor,
-  updateColor,
-  deleteColor,
-} = require("../controller/merchantController/colorController");
+
+
 
 const routes = express.Router();
 
@@ -142,19 +127,8 @@ routes.put("/products/:id/tool-update/:toolId/:configOptionId", verifyToken, upd
 routes.post("/products/:id/add-config-option/:toolId", verifyToken, addConfigoptionToTool);
 routes.delete("/products/:id/delete-config-option/:toolId/:configOptionId", verifyToken, deleteConfigOption);
 routes.delete("/products/:id/delete-tool/:toolId", verifyToken, deleteProductTool);
-//pattern routes
-routes.post("/patterns", verifyToken, validateRequest(patternSchema), createPattern);
-routes.get("/patterns", verifyToken, validateRequest(patternQuerySchema), getPatterns);
-routes.get("/patterns/category/:category", verifyToken, getPatternsByCategory);
-routes.get("/patterns/:id", verifyToken, getPattern);
-routes.put("/patterns/:id", verifyToken, validateRequest(patternUpdateSchema), updatePattern);
-routes.delete("/patterns/:id", verifyToken, deletePattern);
 
-//color routes
-routes.post("/colors", verifyToken, validateRequest(colorSchema), createColor);
-routes.get("/colors", verifyToken, getColors);
-routes.get("/colors/:id", verifyToken, getColor);
-routes.put("/colors/:id", verifyToken, validateRequest(colorUpdateSchema), updateColor);
-routes.delete("/colors/:id", verifyToken, deleteColor);
+
+
 
 module.exports = routes;
