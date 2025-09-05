@@ -37,10 +37,11 @@ const NumberSchema = new Schema(
       y: { type: Number, default: 0.5 },
     },
     size: { type: Number, default: 40 },
+    heightCm: { type: Number, default: 0 },
+    widthCm: { type: Number, default: 0 },
     align: {
-      type: String,
-      enum: ["left", "center", "right"],
-      default: "center",
+      type: Number,
+      default: 0.5,
     },
     mirror: { type: Boolean, default: false },
     validations: {

@@ -282,8 +282,8 @@ const toolsMenuWithOptions = [
     },
   },
   {
-    value: "names",
-    label: "Names",
+    value: "name",
+    label: "Name",
     description: "Add player names",
     options: {
       namesConfig: {
