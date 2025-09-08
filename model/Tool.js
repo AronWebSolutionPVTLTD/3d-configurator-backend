@@ -15,6 +15,7 @@ const toolSchema = new Schema(
     value: { type: String, required: true, unique: true }, // ex: 'jersey-type', 'pattern'
     label: String,
     description: String,
+    icon: String,
     relatedModels: [
       {
         model: String, // e.g. "JerseyType", "Pattern"
