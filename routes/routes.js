@@ -52,6 +52,7 @@ const {
   deleteProduct,
   updateProductStatus,
   getProductToolsConfig,
+  getProductToolsConfigFe,
   updateProductToolsConfig,
   addConfigoptionToTool,
   deleteProductTool,
@@ -123,6 +124,7 @@ routes.put("/products/:id", verifyToken, validateRequest(productUpdateSchema), u
 routes.delete("/products/:id", verifyToken, deleteProduct);
 routes.patch("/products/:id/status", verifyToken, validateRequest(productStatusSchema), updateProductStatus);
 routes.get("/products/:id/tools-config", verifyToken, getProductToolsConfig);
+routes.get("/products/:id/tools-config-fe", getProductToolsConfigFe);   //for frontend testing without token
 routes.put("/products/:id/tool-update/:toolId/:configOptionId", verifyToken, updateProductToolsConfig);
 routes.post("/products/:id/add-config-option/:toolId", verifyToken, addConfigoptionToTool);
 routes.delete("/products/:id/delete-config-option/:toolId/:configOptionId", verifyToken, deleteConfigOption);
