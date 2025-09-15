@@ -19,7 +19,8 @@ const patternAreaSchema = new Schema(
     angle: { type: Number, default: 0, min: 0, max: 360 },
     translateX: { type: Number, default: 0, min: -100, max: 100 },
     translateY: { type: Number, default: 0, min: -100, max: 100 },
-    background: { type: String, default: "" }
+    background: { type: String, default: "" },
+    color: { type: String, default: "" }
   },  
   { timestamps: true }
 );

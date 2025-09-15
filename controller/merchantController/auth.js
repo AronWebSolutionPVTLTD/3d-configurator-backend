@@ -17,7 +17,7 @@ const userSignup = asyncHandler(async (req, res) => {
   const newUser = new User({ name, email, password, role: role });
   await newUser.save();
   const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
+    expiresIn: "30d",
   });
 
   return successResponse(
@@ -43,14 +43,14 @@ const userLogin = asyncHandler(async (req, res) => {
     throw new Error("Invalid credentials");
   }
   const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
+    expiresIn: "30d",
   });
   return successResponse(
     res,
     { user, token },
     "Merchant logged in successfully",
     200
-  );
+  );  
 });
 
 const forgotPassword = asyncHandler(async (req, res) => {

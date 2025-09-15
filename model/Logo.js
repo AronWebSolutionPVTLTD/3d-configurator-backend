@@ -34,6 +34,7 @@ const LogoSchema = new Schema(
     pinned: { type: Boolean, default: false },
 
     zIndex: { type: Number, default: 1 },
+    isActive: { type: Boolean, default: true }, 
   },
   { timestamps: true }
 );

@@ -177,6 +177,7 @@ const updateProduct = asyncHandler(async (req, res) => {
       }).populate("relatedModels.ref");
 
       const productTools = newToolIds.map((toolId) => {
+        
         const configTool = toolConfigurations.find((t) => t._id.equals(toolId));
         const configuration = configTool
           ? configTool.relatedModels.map((rm) => ({

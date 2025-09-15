@@ -53,6 +53,7 @@ const TextSchema = new Schema(
       allowSymbols: { type: Boolean, default: false },
       uppercaseOnly: { type: Boolean, default: true },
     },
+    isActive: { type: Boolean, default: true }, 
   },
   { timestamps: true }
 );

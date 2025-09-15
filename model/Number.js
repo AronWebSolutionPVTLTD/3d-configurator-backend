@@ -50,6 +50,7 @@ const NumberSchema = new Schema(
       allowSymbols: { type: Boolean, default: true },
       noLeadingZero: { type: Boolean, default: true },
     },
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
