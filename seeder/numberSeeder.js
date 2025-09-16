@@ -22,7 +22,7 @@ const numberSeedData = [
       y: 0.5
     },
     size: 40,
-    align: "center",
+    align: 0.5,
     mirror: false,
     validations: {
       maxLength: 4,
@@ -51,7 +51,7 @@ const numberSeedData = [
       y: 0.4
     },
     size: 45,
-    align: "center",
+    align: 0.5,
     mirror: false,
     validations: {
       maxLength: 4,
@@ -80,7 +80,7 @@ const numberSeedData = [
       y: 0.6
     },
     size: 50,
-    align: "center",
+    align: 0.5,
     mirror: false,
     validations: {
       maxLength: 4,
@@ -111,7 +111,7 @@ const numberSeedData = [
       y: 0.5
     },
     size: 35,
-    align: "left",
+    align: 0.5,
     mirror: false,
     validations: {
       maxLength: 4,
@@ -140,7 +140,7 @@ const numberSeedData = [
       y: 0.45
     },
     size: 30,
-    align: "left",
+    align: 0.5,
     mirror: false,
     validations: {
       maxLength: 4,
@@ -171,7 +171,7 @@ const numberSeedData = [
       y: 0.5
     },
     size: 35,
-    align: "right",
+    align: 0.5,
     mirror: false,
     validations: {
       maxLength: 4,
@@ -200,7 +200,7 @@ const numberSeedData = [
       y: 0.55
     },
     size: 38,
-    align: "right",
+    align: 0.5,
     mirror: false,
     validations: {
       maxLength: 4,
@@ -231,7 +231,7 @@ const numberSeedData = [
       y: 0.5
     },
     size: 60,
-    align: "center",
+    align: 0.5,
     mirror: false,
     validations: {
       maxLength: 4,
@@ -260,7 +260,7 @@ const numberSeedData = [
       y: 0.4
     },
     size: 55,
-    align: "center",
+    align: 0.5,
     mirror: false,
     validations: {
       maxLength: 4,
@@ -289,7 +289,7 @@ const numberSeedData = [
       y: 0.6
     },
     size: 65,
-    align: "center",
+    align: 0.5,
     mirror: false,
     validations: {
       maxLength: 4,
@@ -320,7 +320,7 @@ const numberSeedData = [
       y: 0.3
     },
     size: 42,
-    align: "center",
+    align: 0.5,
     mirror: false,
     validations: {
       maxLength: 4,
@@ -349,7 +349,7 @@ const numberSeedData = [
       y: 0.5
     },
     size: 32,
-    align: "left",
+    align: 0.5,
     mirror: true,
     validations: {
       maxLength: 4,
