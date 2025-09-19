@@ -279,6 +279,28 @@ const getProductToolsConfig = asyncHandler(async (req, res) => {
   );
 });
 
+const getProductToolsConfigFe = asyncHandler(async (req, res) => {
+  console.log("getProductToolsConfigTest");
+  const { id } = req.params;
+
+  const product = await Product.findOne({ _id: id});
+
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  const productTools = await ProductTool.find({
+    product: product._id,
+  }).populate("tool");
+
+  return successResponse(
+    res,
+    productTools,
+    "Product tools configuration retrieved successfully",
+    200
+  );
+});
+
 const updateProductToolsConfig = asyncHandler(async (req, res) => {
   const { id, toolId, configOptionId } = req.params;
   const merchant = req.user._id;
@@ -486,6 +508,7 @@ module.exports = {
   deleteProduct,
   updateProductStatus,
   getProductToolsConfig,
+  getProductToolsConfigFe,
   updateProductToolsConfig,
   addConfigoptionToTool,
   deleteProductTool,
