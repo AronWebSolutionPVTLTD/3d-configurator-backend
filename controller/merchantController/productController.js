@@ -51,9 +51,9 @@ const createProduct = asyncHandler(async (req, res) => {
         // Map to full populated relatedModels objects
         const configuration = configTool
           ? configTool.relatedModels.map((rm) => ({
-              ...(rm.ref?._doc || rm.ref), // get full populated data
-              model: rm.model,
-            }))
+            ...(rm.ref?._doc || rm.ref), // get full populated data
+            model: rm.model,
+          }))
           : [];
         return {
           product: isCreated._id,
@@ -180,9 +180,9 @@ const updateProduct = asyncHandler(async (req, res) => {
         const configTool = toolConfigurations.find((t) => t._id.equals(toolId));
         const configuration = configTool
           ? configTool.relatedModels.map((rm) => ({
-              ...(rm.ref?._doc || rm.ref),
-              model: rm.model,
-            }))
+            ...(rm.ref?._doc || rm.ref),
+            model: rm.model,
+          }))
           : [];
 
         return {
@@ -281,8 +281,22 @@ const getProductToolsConfig = asyncHandler(async (req, res) => {
 const getProductToolsConfigFe = asyncHandler(async (req, res) => {
   console.log("getProductToolsConfigTest");
   const { id } = req.params;
+  const { uid } = req.query;
+  const productInfo = await Product.findOne({ referencedProduct: id, customizedByUser: uid, isCustomizedByUser: true });
 
-  const product = await Product.findOne({ _id: id});
+  if (productInfo) {
+    const productTools = await ProductTool.find({
+      product: productInfo._id,
+    }).populate("tool");
+    return successResponse(
+      res,
+      productTools,
+      "Product tools configuration retrieved successfully",
+      200
+    );
+  }
+
+  const product = await Product.findOne({ _id: id });
 
   if (!product) {
     throw new Error("Product not found");
@@ -499,6 +513,231 @@ const deleteProductTool = asyncHandler(async (req, res) => {
   );
 });
 
+// Create or update customized product
+const createOrUpdateCustomizedProduct = asyncHandler(async (req, res) => {
+  const {
+    referencedProduct,
+    customizedByUser,
+    name,
+    description,
+    basePrice,
+    images,
+    tools,
+  } = req.body;
+
+  // First, find the referenced product to get its base data
+  const originalProduct = await Product.findById(referencedProduct);
+
+  if (!originalProduct) {
+    throw new Error("Referenced product not found");
+  }
+
+  // Check if a customized product already exists for this user and referenced product
+  const existingCustomizedProduct = await Product.findOne({
+    referencedProduct: referencedProduct,
+    customizedByUser: customizedByUser,
+    isCustomizedByUser: true,
+  });
+
+  let customizedProduct;
+
+  if (existingCustomizedProduct) {
+    // Update existing customized product
+    const updateData = {
+      updatedAt: new Date(),
+    };
+
+    // Add optional fields if provided
+    if (name) updateData.name = name;
+    if (description) updateData.description = description;
+    if (basePrice !== undefined) updateData.basePrice = basePrice;
+    if (images) updateData.images = images;
+    if (tools) updateData.tools = tools;
+
+    customizedProduct = await Product.findOneAndUpdate(
+      { _id: existingCustomizedProduct._id },
+      updateData,
+      { new: true, runValidators: true }
+    )
+      .populate("sport", "name")
+      .populate("tools");
+
+    // Handle tools update if tools were provided
+    if (tools && tools.length > 0) {
+      // 1️⃣ Fetch all existing ProductTool entries for this product
+      const existingTools = await ProductTool.find({ product: customizedProduct._id });
+      const existingToolIds = existingTools.map((pt) => pt.tool.toString());
+
+      // 2️⃣ Fetch tool configurations for provided tool IDs
+      const toolIds = tools.map((t) => t?.tool?._id || t._id);
+      const toolConfigurations = await Tool.find({ _id: { $in: toolIds } }).populate({
+        path: "relatedModels.ref",
+      });
+
+      // 3️⃣ Iterate through each incoming tool
+      for (const incomingTool of tools) {
+        const toolId = incomingTool?.tool?._id?.toString() || incomingTool?._id?.toString();
+
+        if (!toolId) continue;
+
+        const existingTool = existingTools.find((pt) => pt.tool.toString() === toolId);
+        const configTool = toolConfigurations.find((t) => t._id.equals(toolId));
+
+        // ✅ Prepare configuration
+        const configuration = Array.isArray(incomingTool.config)
+          ? incomingTool.config
+          : configTool
+            ? configTool.relatedModels.map((rm) => ({
+              ...(rm.ref?._doc || rm.ref),
+              model: rm.model,
+            }))
+            : [];
+
+        if (existingTool) {
+          // 4️⃣ UPDATE existing ProductTool config
+          await ProductTool.findByIdAndUpdate(
+            existingTool._id,
+            { config: configuration, updatedAt: new Date() },
+            { new: true, runValidators: true }
+          );
+        } else {
+          // 5️⃣ CREATE new ProductTool entry
+          await ProductTool.create({
+            product: customizedProduct._id,
+            tool: toolId, // ✅ same structure as in creation block
+            config: configuration,
+          });
+        }
+      }
+
+      // 6️⃣ Remove tools no longer present in request
+      const incomingToolIds = toolIds.map((id) => id.toString());
+      const removedToolIds = existingToolIds.filter((id) => !incomingToolIds.includes(id));
+
+      if (removedToolIds.length > 0) {
+        await ProductTool.deleteMany({
+          product: customizedProduct._id,
+          tool: { $in: removedToolIds },
+        });
+      }
+    }
+
+
+
+
+  } else {
+    // Create new customized product
+    const toolsToUse = tools || originalProduct.tools;
+
+    // Create the customized product based on the original
+    const customizedProductData = {
+      merchant: originalProduct.merchant,
+      sport: originalProduct.sport,
+      category: originalProduct.category,
+      name: name || `${originalProduct.name} (Customized)`,
+      description: description || originalProduct.description,
+      basePrice: basePrice !== undefined ? basePrice : originalProduct.basePrice,
+      images: images || originalProduct.images,
+      tools: toolsToUse,
+      stock: originalProduct.stock,
+      status: "draft", // Customized products start as draft
+      isCustomizedByUser: true,
+      customizedByUser: customizedByUser,
+      referencedProduct: referencedProduct,
+    };
+
+    customizedProduct = new Product(customizedProductData);
+    const isCreated = await customizedProduct.save();
+
+    // Handle tools creation if tools exist
+    if (isCreated?._id && toolsToUse && toolsToUse.length > 0) {
+      // Only fetch configurations for relevant tools and populate relatedModels.ref
+      console.log("Creating ProductTools for tools:", toolsToUse);
+      const toolConfigurations = await Tool.find({
+        _id: { $in: toolsToUse },
+      }).populate({
+        path: "relatedModels.ref",
+      });
+
+      const productTools = toolsToUse.map((toolId) => {
+        const configTool = toolConfigurations.find((tool) =>
+          tool._id.equals(toolId)
+        );
+        // Map to full populated relatedModels objects
+        const configuration = configTool
+          ? configTool.relatedModels.map((rm) => ({
+            ...(rm.ref?._doc || rm.ref), // get full populated data
+            model: rm.model,
+          }))
+          : toolId.config || []; // if no configTool found, use empty array or existing config if any
+        return {
+          product: isCreated._id,
+          tool: toolId?.tool?._id,
+          config: configuration,
+        };
+      });
+
+      await ProductTool.insertMany(productTools);
+    }
+
+    // Populate the created product
+    await customizedProduct.populate('sport category tools');
+  }
+
+  return successResponse(
+    res,
+    customizedProduct,
+    existingCustomizedProduct ? "Customized product updated successfully" : "Customized product created successfully",
+    200
+  );
+});
+
+// Get customized products for a user
+const getCustomizedProducts = asyncHandler(async (req, res) => {
+  const { customizedByUser } = req.params;
+  const { page = 1, limit = 10 } = req.query;
+
+  try {
+    const skip = (page - 1) * limit;
+
+    const customizedProducts = await Product.find({
+      customizedByUser: customizedByUser,
+      isCustomizedByUser: true,
+    })
+      .populate('sport category tools')
+      .populate('reffrencedProduct', 'name basePrice images')
+      .sort({ updatedAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const total = await Product.countDocuments({
+      customizedByUser: customizedByUser,
+      isCustomizedByUser: true,
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        products: customizedProducts,
+        pagination: {
+          currentPage: parseInt(page),
+          totalPages: Math.ceil(total / limit),
+          totalItems: total,
+          itemsPerPage: parseInt(limit),
+        },
+      },
+    });
+
+  } catch (error) {
+    console.error("Error in getCustomizedProducts:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching customized products",
+      error: error.message,
+    });
+  }
+});
+
 module.exports = {
   createProduct,
   getProducts,
@@ -512,4 +751,6 @@ module.exports = {
   addConfigoptionToTool,
   deleteProductTool,
   deleteConfigOption,
+  createOrUpdateCustomizedProduct,
+  getCustomizedProducts,
 };

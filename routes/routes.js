@@ -41,6 +41,7 @@ const {
   productUpdateSchema,
   productStatusSchema,
   productQuerySchema,
+  customizedProductSchema,
 } = require("../validation/productValidations");
 const { toolSchema } = require("../validation/toolValidations");
 
@@ -57,6 +58,8 @@ const {
   addConfigoptionToTool,
   deleteProductTool,
   deleteConfigOption,
+  createOrUpdateCustomizedProduct,
+  getCustomizedProducts,
 } = require("../controller/merchantController/productController");
 
 
@@ -129,6 +132,10 @@ routes.put("/products/:id/tool-update/:toolId/:configOptionId", verifyToken, upd
 routes.post("/products/:id/add-config-option/:toolId", verifyToken, addConfigoptionToTool);
 routes.delete("/products/:id/delete-config-option/:toolId/:configOptionId", verifyToken, deleteConfigOption);
 routes.delete("/products/:id/delete-tool/:toolId", verifyToken, deleteProductTool);
+
+// Customized product routes
+routes.post("/products/customized",  validateRequest(customizedProductSchema), createOrUpdateCustomizedProduct);
+routes.get("/products/customized/:customizedByUser", verifyToken, getCustomizedProducts);
 
 
 

@@ -122,9 +122,38 @@ const productQuerySchema = Joi.object({
     .valid("draft", "active", "inactive", "archived"),
 });
 
+// Customized product validation schema
+const customizedProductSchema = Joi.object({
+  referencedProduct: Joi.string().required().hex().length(24).messages({
+    "string.empty": "Referenced product ID is required",
+    "string.hex": "Referenced product ID must be a valid MongoDB ObjectId",
+    "string.length": "Referenced product ID must be 24 characters long",
+  }),
+  
+  customizedByUser: Joi.string().required().messages({
+    "string.empty": "Customized by user identifier is required",
+  }),
+  
+  tools: Joi.array().optional(),
+  
+  // Optional fields that can be customized
+  name: Joi.string().optional().trim().max(100),
+  description: Joi.string().optional().trim().max(500),
+  basePrice: Joi.number().optional().min(0),
+  images: Joi.array()
+    .items(
+      Joi.object({
+        url: Joi.string().required().uri(),
+        alt: Joi.string().optional().max(100),
+      })
+    )
+    .optional(),
+});
+
 module.exports = {
   productSchema,
   productUpdateSchema,
   productStatusSchema,
   productQuerySchema,
+  customizedProductSchema,
 };

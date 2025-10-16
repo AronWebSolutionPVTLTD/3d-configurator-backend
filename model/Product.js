@@ -59,6 +59,9 @@ const productSchema = new Schema(
       default: "draft",
       index: true,
     },
+    isCustomizedByUser: { type: Boolean, default: false },
+    customizedByUser: { type: String, default: "" },
+    referencedProduct: { type: Schema.Types.ObjectId, ref: "Product" },
   },
   { timestamps: true }
 );
