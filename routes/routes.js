@@ -60,7 +60,9 @@ const {
   deleteConfigOption,
   createOrUpdateCustomizedProduct,
   getCustomizedProducts,
+  uploadFile,
 } = require("../controller/merchantController/productController");
+const { upload } = require("../middleware/uploadMiddleware");
 
 
 
@@ -134,10 +136,11 @@ routes.delete("/products/:id/delete-config-option/:toolId/:configOptionId", veri
 routes.delete("/products/:id/delete-tool/:toolId", verifyToken, deleteProductTool);
 
 // Customized product routes
-routes.post("/products/customized",  validateRequest(customizedProductSchema), createOrUpdateCustomizedProduct);
+routes.post("/products/customized", validateRequest(customizedProductSchema), createOrUpdateCustomizedProduct);
 routes.get("/products/customized/:customizedByUser", verifyToken, getCustomizedProducts);
 
-
+//logo file upload api
+routes.post("/upload", upload.single("file"), uploadFile);
 
 
 module.exports = routes;

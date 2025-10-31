@@ -9,6 +9,7 @@ const { connectDB } = require("./config/db");
 const allRouter = require("./routes/index");
 const responseTime = require("response-time");
 const { errorHandler, AppError } = require("./middleware/errorHandler");
+const path = require("path");
 
 dotenv.config();
 const app = express();
@@ -19,6 +20,7 @@ app.use(bodyParser.json());
 app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(responseTime());
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 morgan.token("response-time-ms", function (req, res) {
   return res.getHeader("X-Response-Time") || "0ms";
@@ -29,7 +31,7 @@ app.use(
     ":method :url :status :res[content-length] - :response-time ms - req-body: :req-body"
   )
 );
-console.log("----process.env.CORS_ORIGIN----->",process.env.CORS_ORIGIN)
+console.log("----process.env.CORS_ORIGIN----->", process.env.CORS_ORIGIN)
 const allowedOrigins = [
   "https://3d-configurator-admin.vercel.app",
   "http://localhost:5173",

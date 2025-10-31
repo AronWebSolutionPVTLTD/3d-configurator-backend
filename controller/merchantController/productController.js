@@ -738,6 +738,16 @@ const getCustomizedProducts = asyncHandler(async (req, res) => {
   }
 });
 
+const uploadFile = asyncHandler(async (req, res) => {
+  const file = req.file;
+  if (!file) {
+    throw new Error("No file uploaded");
+  }
+
+  const fileUrl = `/uploads/${file.filename}`;
+  return successResponse(res, { url: fileUrl }, "Product created successfully", 201);
+})
+
 module.exports = {
   createProduct,
   getProducts,
@@ -753,4 +763,5 @@ module.exports = {
   deleteConfigOption,
   createOrUpdateCustomizedProduct,
   getCustomizedProducts,
+  uploadFile
 };
