@@ -36,6 +36,7 @@ const allowedOrigins = [
   "https://3d-configurator-admin.vercel.app",
   "http://localhost:5173",
   "http://localhost:5174",
+  "https://3d-sidebar-tools-dev.vercel.app"
 ];
 app.use(
   cors({
