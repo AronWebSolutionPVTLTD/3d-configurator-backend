@@ -45,6 +45,30 @@ const {
 } = require("../validation/productValidations");
 const { toolSchema } = require("../validation/toolValidations");
 
+// dynamic config controllers
+const {
+  getFonts,
+  getFont,
+  createFont,
+  updateFont,
+  deleteFont,
+} = require("../controller/merchantController/fontController");
+
+const {
+  getPlacementZones,
+  getPlacementZone,
+  createPlacementZone,
+  updatePlacementZone,
+  deletePlacementZone,
+} = require("../controller/merchantController/placementZoneController");
+
+const {
+  getColorSwatches,
+  createColorSwatch,
+  updateColorSwatch,
+  deleteColorSwatch,
+} = require("../controller/merchantController/colorSwatchController");
+
 const {
   createProduct,
   getProducts,
@@ -120,6 +144,26 @@ routes.delete("/categories/:id", verifyToken, deleteCategory);
 routes.get("/tools", getTools);
 routes.get("/tools/:id", getTool);
 routes.post("/tools", verifyToken, validateRequest(toolSchema), createTool);
+
+// fonts
+routes.get("/fonts", getFonts);
+routes.get("/fonts/:id", getFont);
+routes.post("/fonts", verifyToken, createFont);
+routes.put("/fonts/:id", verifyToken, updateFont);
+routes.delete("/fonts/:id", verifyToken, deleteFont);
+
+// placement zones
+routes.get("/placement-zones", getPlacementZones);
+routes.get("/placement-zones/:id", getPlacementZone);
+routes.post("/placement-zones", verifyToken, createPlacementZone);
+routes.put("/placement-zones/:id", verifyToken, updatePlacementZone);
+routes.delete("/placement-zones/:id", verifyToken, deletePlacementZone);
+
+// color swatches
+routes.get("/color-swatches", getColorSwatches);
+routes.post("/color-swatches", verifyToken, createColorSwatch);
+routes.put("/color-swatches/:id", verifyToken, updateColorSwatch);
+routes.delete("/color-swatches/:id", verifyToken, deleteColorSwatch);
 
 //product routes
 routes.get("/products", verifyToken, validateRequest(productQuerySchema), getProducts);

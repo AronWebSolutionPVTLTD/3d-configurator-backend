@@ -8,6 +8,12 @@ const OutlineSchema = new Schema({
   thickness: { type: Number, default: 2 },
 });
 
+const Border2Schema = new Schema({
+  enabled: { type: Boolean, default: false },
+  color: { type: String, default: "#000000" },
+  thickness: { type: Number, default: 2 },
+});
+
 const BackgroundSchema = new Schema({
   enabled: { type: Boolean, default: false },
   color: { type: String, default: "#FFFFFF" },
@@ -35,9 +41,11 @@ const NameSchema = new Schema(
     },
 
     font: { type: String, default: "F1" },
+    fontSize: { type: Number, default: 56 },
     color: { type: String, default: "#FFFFFF" },
 
     outline: { type: OutlineSchema, default: () => ({}) },
+  border2: { type: Border2Schema, default: () => ({}) },
     background: { type: BackgroundSchema, default: () => ({}) },
 
     width: { type: Number, default: 20 },

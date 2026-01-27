@@ -6,6 +6,7 @@ const colorSwatchSchema = new Schema(
   {
     name: { type: String, required: true },
     value: { type: String, required: true }, // hex code
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

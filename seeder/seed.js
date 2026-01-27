@@ -12,6 +12,8 @@ const FeatureMenu = require("../model/FeatureMenu.js");
 const CustomColorSection = require("../model/CustomColorSection.js");
 const PatternArea = require("../model/PatternArea.js");
 const Number = require("../model/Number.js");
+const Font = require("../model/Font.js");
+const PlacementZone = require("../model/PlacementZone.js");
 
 // Data
 const {
@@ -20,6 +22,37 @@ const {
   toolsMenuWithOptions,
 } = require("../data/toolsMenuData.js");
 const { seedNumbers, numberSeedData } = require("./numberSeeder.js");
+
+// Seed fonts (can be replaced by admin UI later)
+const fontSeeds = [
+  { name: "edge-dallas", label: "Edge Dallas", fontFamily: "Edge Dallas" },
+  { name: "roboto", label: "Roboto", fontFamily: "Roboto" },
+  { name: "montserrat", label: "Montserrat", fontFamily: "Montserrat" },
+  { name: "times-new-roman", label: "Times New Roman", fontFamily: "Times New Roman" },
+  { name: "impact", label: "Impact", fontFamily: "Impact" },
+];
+
+// Seed placement zones (starter set per toolType)
+const placementZoneSeeds = [
+  { key: "chest-center", name: "Chest Center", label: "Chest Center", toolType: "name", order: 1 },
+  { key: "chest-left", name: "Chest Left", label: "Chest Left", toolType: "name", order: 2 },
+  { key: "chest-right", name: "Chest Right", label: "Chest Right", toolType: "name", order: 3 },
+  { key: "back-top", name: "Back Top", label: "Back Top", toolType: "name", order: 4 },
+  { key: "back-center", name: "Back Center", label: "Back Center", toolType: "name", order: 5 },
+  { key: "back-bottom", name: "Back Bottom", label: "Back Bottom", toolType: "name", order: 6 },
+
+  { key: "number-front-center", name: "Front Center", label: "Front Center", toolType: "numbers", order: 1 },
+  { key: "number-back", name: "Back", label: "Back", toolType: "numbers", order: 2 },
+  { key: "number-chest-left", name: "Chest Left", label: "Chest Left", toolType: "numbers", order: 3 },
+  { key: "number-chest-right", name: "Chest Right", label: "Chest Right", toolType: "numbers", order: 4 },
+
+  { key: "logo-front", name: "Front", label: "Front", toolType: "logo", order: 1 },
+  { key: "logo-back", name: "Back", label: "Back", toolType: "logo", order: 2 },
+  { key: "logo-sleeve", name: "Sleeve", label: "Sleeve", toolType: "logo", order: 3 },
+
+  { key: "text-front", name: "Front", label: "Front", toolType: "text", order: 1 },
+  { key: "text-back", name: "Back", label: "Back", toolType: "text", order: 2 },
+];
 
 const MONGO_URI =
   process.env.MONGODB_URI ||
@@ -44,6 +77,8 @@ async function seed() {
       CustomColorSection.deleteMany({}),
       PatternArea.deleteMany({}),
       Number.deleteMany({}),
+      Font.deleteMany({}),
+      PlacementZone.deleteMany({}),
     ]);
 
     console.log("🗑 Cleared old data");
@@ -51,6 +86,14 @@ async function seed() {
     // Insert Color Swatches
     const swatches = await ColorSwatch.insertMany(colorSwatches);
     console.log(`🎨 Inserted ${swatches.length} color swatches`);
+
+    // Insert Fonts
+    const fonts = await Font.insertMany(fontSeeds);
+    console.log(`🔤 Inserted ${fonts.length} fonts`);
+
+    // Insert Placement Zones
+    const zones = await PlacementZone.insertMany(placementZoneSeeds);
+    console.log(`📍 Inserted ${zones.length} placement zones`);
 
     // Insert Patterns
     const pats = await Pattern.insertMany(patterns);

@@ -16,6 +16,18 @@ const toolSchema = new Schema(
     label: String,
     description: String,
     icon: String,
+    // Optional tool-level defaults the UI can consume to render dynamic fields
+    defaultConfig: { type: Schema.Types.Mixed, default: null },
+    // Optional multiple outline layers support (e.g., Border 1, Border 2)
+    outlines: [
+      {
+        name: { type: String },
+        enabled: { type: Boolean, default: true },
+        color: { type: String, default: "#000000" },
+        thickness: { type: Number, default: 2 },
+        order: { type: Number, default: 1 },
+      },
+    ],
     relatedModels: [
       {
         model: String, // e.g. "JerseyType", "Pattern"
