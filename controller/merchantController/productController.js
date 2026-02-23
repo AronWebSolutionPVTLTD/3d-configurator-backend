@@ -580,31 +580,62 @@ const createOrUpdateCustomizedProduct = asyncHandler(async (req, res) => {
 
         if (!toolId) continue;
 
-        const existingTool = existingTools.find((pt) => pt.tool.toString() === toolId);
-        const configTool = toolConfigurations.find((t) => t._id.equals(toolId));
+      //   const existingTool = existingTools.find((pt) => pt.tool.toString() === toolId);
+      //   const configTool = toolConfigurations.find((t) => t._id.equals(toolId));
 
-        // ✅ Prepare configuration
-        const configuration = Array.isArray(incomingTool.config)
-          ? incomingTool.config
-          : configTool
-            ? configTool.relatedModels.map((rm) => ({
-              ...(rm.ref?._doc || rm.ref),
-              model: rm.model,
-            }))
-            : [];
+      //   // ✅ Prepare configuration
+      //   const configuration = Array.isArray(incomingTool.config)
+      //     ? incomingTool.config
+      //     : configTool
+      //       ? configTool.relatedModels.map((rm) => ({
+      //         ...(rm.ref?._doc || rm.ref),
+      //         model: rm.model,
+      //       }))
+      //       : [];
 
-        if (existingTool) {
-          // 4️⃣ UPDATE existing ProductTool config
+      //   if (existingTool) {
+      //     // 4️⃣ UPDATE existing ProductTool config
+      //     await ProductTool.findByIdAndUpdate(
+      //       existingTool._id,
+      //       { config: configuration, updatedAt: new Date() },
+      //       { new: true, runValidators: true }
+      //     );
+      //   } else {
+      //     // 5️⃣ CREATE new ProductTool entry
+      //     await ProductTool.create({
+      //       product: customizedProduct._id,
+      //       tool: toolId, // ✅ same structure as in creation block
+      //       config: configuration,
+      //     });
+      //   }
+      // }
+
+      for (const incomingTool of tools) {
+        const toolId = typeof incomingTool.tool === 'object'
+          ? incomingTool.tool?._id?.toString()
+          : incomingTool.tool?.toString();
+
+        if (!toolId) {
+          console.warn('Skipping tool with no toolId:', incomingTool);
+          continue;
+        }
+
+        const existingProductTool = existingProductTools.find(
+          (pt) => pt.tool.toString() === toolId
+        );
+
+        const configuration = Array.isArray(incomingTool.config) ? incomingTool.config : [];
+
+        if (existingProductTool) {
           await ProductTool.findByIdAndUpdate(
-            existingTool._id,
+            existingProductTool._id,
             { config: configuration, updatedAt: new Date() },
-            { new: true, runValidators: true }
+            { new: true }
           );
         } else {
-          // 5️⃣ CREATE new ProductTool entry
           await ProductTool.create({
             product: customizedProduct._id,
-            tool: toolId, // ✅ same structure as in creation block
+            tool: toolId,
             config: configuration,
           });
         }
